@@ -1,6 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:ndk/ndk.dart';
-import 'package:ndk_rust_verifier/ndk_rust_verifier.dart';
 
 class NostrVideo {
   final String id;
@@ -76,56 +74,5 @@ class NostrVideo {
       authorPubkey: event.pubKey,
       createdAt: DateTime.fromMillisecondsSinceEpoch(event.createdAt * 1000),
     );
-  }
-}
-
-class NostrService {
-  late final Ndk _ndk;
-  final List<String> _relays = [
-    'wss://relay.damus.io',
-    'wss://relay.nostr.band',
-    'wss://nos.lol',
-    'wss://relay.snort.social',
-  ];
-
-  NostrService() {
-    final cacheManager = MemCacheManager();
-    _ndk = Ndk(
-      NdkConfig(eventVerifier: RustEventVerifier(), cache: cacheManager),
-    );
-  }
-
-  Stream<NostrVideo> fetchVideoEvents({int limit = 50, int? kind}) async* {
-    final response = _ndk.requests.query(
-      filters: [
-        Filter(
-          kinds: kind != null
-              ? [kind]
-              : [
-                  34235,
-                  34236,
-                ], // NIP-71: 34235 = long videos, 34236 = short videos
-          limit: limit,
-        ),
-      ],
-      explicitRelays: _relays,
-    );
-
-    await for (final event in response.stream) {
-      try {
-        final video = NostrVideo.fromEvent(event);
-        if (video.videoUrl.isNotEmpty) {
-          yield video;
-        }
-      } catch (e) {
-        if (kDebugMode) {
-          print('Error parsing video event: $e');
-        }
-      }
-    }
-  }
-
-  Future<void> destroy() async {
-    _ndk.destroy();
   }
 }

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:toastification/toastification.dart';
-import '../services/nostr_service.dart';
+import '../models/nostr_video.dart';
+import '../repository.dart';
 
 class ShortVideosScreen extends StatefulWidget {
   const ShortVideosScreen({super.key});
@@ -12,14 +13,15 @@ class ShortVideosScreen extends StatefulWidget {
 }
 
 class _ShortVideosScreenState extends State<ShortVideosScreen> {
-  final NostrService _nostrService = NostrService();
-  final List<NostrVideo> _videos = [];
+  final Repository _repository = Repository.to;
   final PageController _pageController = PageController();
   final Map<int, Player> _players = {};
   final Map<int, VideoController> _controllers = {};
 
   bool _isLoading = true;
   int _currentIndex = 0;
+
+  List<NostrVideo> get _videos => _repository.shortsVideos;
 
   @override
   void initState() {
@@ -40,20 +42,16 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
     });
 
     try {
-      await for (final video in _nostrService.fetchVideoEvents(
-        limit: 50,
-        kind: 34236,
-      )) {
-        if (mounted) {
-          setState(() {
-            _videos.add(video);
-          });
+      // NIP-71: kind 22 = short videos
+      await _repository.fetchVideoEvents(limit: 50, kind: 22);
 
+      if (mounted) {
+        setState(() {
           // Preload first video
-          if (_videos.length == 1) {
+          if (_videos.isNotEmpty) {
             _initializePlayer(0);
           }
-        }
+        });
       }
     } catch (e) {
       if (mounted) {
@@ -128,7 +126,6 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
     for (var player in _players.values) {
       player.dispose();
     }
-    _nostrService.destroy();
     super.dispose();
   }
 

@@ -1,7 +1,7 @@
+import 'package:brass/models/nostr_video.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
-import '../services/nostr_service.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   final NostrVideo video;

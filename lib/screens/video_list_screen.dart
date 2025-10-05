@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
-import '../services/nostr_service.dart';
+import '../models/nostr_video.dart';
+import '../repository.dart';
 import 'video_player_screen.dart';
 
 enum VideoType { long, short }
@@ -15,8 +16,7 @@ class VideoListScreen extends StatefulWidget {
 }
 
 class _VideoListScreenState extends State<VideoListScreen> {
-  final NostrService _nostrService = NostrService();
-  final List<NostrVideo> _videos = [];
+  final Repository _repository = Repository.to;
   bool _isLoading = true;
 
   @override
@@ -31,17 +31,9 @@ class _VideoListScreenState extends State<VideoListScreen> {
     });
 
     try {
-      final kind = widget.videoType == VideoType.long ? 34235 : 34236;
-      await for (final video in _nostrService.fetchVideoEvents(
-        limit: 50,
-        kind: kind,
-      )) {
-        if (mounted) {
-          setState(() {
-            _videos.add(video);
-          });
-        }
-      }
+      // NIP-71: kind 21 = normal videos, kind 22 = short videos
+      final kind = widget.videoType == VideoType.long ? 21 : 22;
+      await _repository.fetchVideoEvents(limit: 50, kind: kind);
     } catch (e) {
       if (mounted) {
         toastification.show(
@@ -63,9 +55,12 @@ class _VideoListScreenState extends State<VideoListScreen> {
     }
   }
 
+  List<NostrVideo> get _videos => widget.videoType == VideoType.long
+      ? _repository.normalVideos
+      : _repository.shortsVideos;
+
   @override
   void dispose() {
-    _nostrService.destroy();
     super.dispose();
   }
 
@@ -109,7 +104,11 @@ class _VideoListScreenState extends State<VideoListScreen> {
             icon: const Icon(Icons.refresh),
             onPressed: () {
               setState(() {
-                _videos.clear();
+                if (widget.videoType == VideoType.long) {
+                  _repository.normalVideos.clear();
+                } else {
+                  _repository.shortsVideos.clear();
+                }
               });
               _loadVideos();
             },
