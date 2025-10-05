@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:ndk/entities.dart';
+import 'package:audio_service/audio_service.dart';
 import '../../models/nostr_video.dart';
 import '../../repository.dart';
 import '../channel_screen.dart';
@@ -63,6 +64,24 @@ class ShortVideosController extends GetxController {
   void onInit() {
     super.onInit();
     _loadVideos();
+    _initializeMpris();
+  }
+
+  void _initializeMpris() async {
+    try {
+      await AudioService.init(
+        builder: () => _ShortVideoAudioHandler(this),
+        config: const AudioServiceConfig(
+          androidNotificationChannelId: 'com.brass.channel.audio',
+          androidNotificationChannelName: 'Brass Audio playback',
+          androidNotificationOngoing: true,
+        ),
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error initializing audio service: $e');
+      }
+    }
   }
 
   @override
@@ -201,5 +220,35 @@ class ShortVideosController extends GetxController {
       currentIndex.value++;
       _initializePlayer();
     }
+  }
+}
+
+class _ShortVideoAudioHandler extends BaseAudioHandler {
+  final ShortVideosController controller;
+
+  _ShortVideoAudioHandler(this.controller) {
+    playbackState.add(PlaybackState(
+      controls: [MediaControl.pause],
+      playing: true,
+      processingState: AudioProcessingState.ready,
+    ));
+  }
+
+  @override
+  Future<void> play() async {
+    controller.resumeVideo();
+    playbackState.add(playbackState.value.copyWith(
+      controls: [MediaControl.pause],
+      playing: true,
+    ));
+  }
+
+  @override
+  Future<void> pause() async {
+    controller.pauseVideo();
+    playbackState.add(playbackState.value.copyWith(
+      controls: [MediaControl.play],
+      playing: false,
+    ));
   }
 }
