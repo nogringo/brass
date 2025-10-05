@@ -6,6 +6,7 @@ import 'package:ndk_rust_verifier/data_layer/repositories/verifiers/rust_event_v
 import 'package:toastification/toastification.dart';
 import 'repository.dart';
 import 'screens/home_screen.dart';
+import 'package:nostr_widgets/l10n/app_localizations.dart' as nostr_widgets;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +29,7 @@ class MainApp extends StatelessWidget {
     return ToastificationWrapper(
       child: GetMaterialApp(
         title: 'Brass',
+        localizationsDelegates: [nostr_widgets.AppLocalizations.delegate],
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.cyan),
         ),

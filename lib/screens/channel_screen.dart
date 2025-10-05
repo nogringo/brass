@@ -23,8 +23,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
   }
 
   void _loadChannel() async {
-    setState(() {
-    });
+    setState(() {});
 
     final channel = await _repository.fetchChannelMetadata(widget.pubkey);
 
@@ -101,7 +100,9 @@ class _ChannelScreenState extends State<ChannelScreen> {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Theme.of(context).colorScheme.surface.withValues(alpha: 0.7),
+                          Theme.of(
+                            context,
+                          ).colorScheme.surface.withValues(alpha: 0.7),
                         ],
                       ),
                     ),
@@ -121,7 +122,9 @@ class _ChannelScreenState extends State<ChannelScreen> {
                     children: [
                       CircleAvatar(
                         radius: 40,
-                        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primaryContainer,
                         backgroundImage: _channel?.picture != null
                             ? NetworkImage(_channel!.picture!)
                             : null,
@@ -129,7 +132,9 @@ class _ChannelScreenState extends State<ChannelScreen> {
                             ? Icon(
                                 Icons.person,
                                 size: 40,
-                                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onPrimaryContainer,
                               )
                             : null,
                       ),
@@ -139,7 +144,8 @@ class _ChannelScreenState extends State<ChannelScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              _channel?.displayName ?? widget.pubkey.substring(0, 16),
+                              _channel?.displayName ??
+                                  widget.pubkey.substring(0, 16),
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             if (_channel?.nip05 != null) ...[
@@ -149,13 +155,17 @@ class _ChannelScreenState extends State<ChannelScreen> {
                                   Icon(
                                     Icons.verified,
                                     size: 16,
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                   ),
                                   const SizedBox(width: 4),
                                   Expanded(
                                     child: Text(
                                       _channel!.nip05!,
-                                      style: Theme.of(context).textTheme.bodySmall,
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodySmall,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
@@ -165,8 +175,11 @@ class _ChannelScreenState extends State<ChannelScreen> {
                             const SizedBox(height: 4),
                             Text(
                               '${videos.length} videos',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
                                   ),
                             ),
                           ],
@@ -217,110 +230,125 @@ class _ChannelScreenState extends State<ChannelScreen> {
               padding: const EdgeInsets.all(8),
               sliver: SliverGrid(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: MediaQuery.of(context).size.width < 600 ? 2 : 3,
+                  crossAxisCount: MediaQuery.of(context).size.width < 600
+                      ? 2
+                      : 3,
                   childAspectRatio: 16 / 12,
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8,
                 ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final video = videos[index];
-                    return Card(
-                      clipBehavior: Clip.antiAlias,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => VideoPlayerScreen(video: video),
-                            ),
-                          );
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Thumbnail
-                            Expanded(
-                              child: Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                                  image: video.thumbnailUrl != null
-                                      ? DecorationImage(
-                                          image: NetworkImage(video.thumbnailUrl!),
-                                          fit: BoxFit.cover,
-                                        )
-                                      : null,
-                                ),
-                                child: Stack(
-                                  children: [
-                                    if (video.thumbnailUrl == null)
-                                      Center(
-                                        child: Icon(
-                                          Icons.play_circle_outline,
-                                          size: 40,
-                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final video = videos[index];
+                  return Card(
+                    clipBehavior: Clip.antiAlias,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                VideoPlayerScreen(video: video),
+                          ),
+                        );
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Thumbnail
+                          Expanded(
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.surfaceContainerHighest,
+                                image: video.thumbnailUrl != null
+                                    ? DecorationImage(
+                                        image: NetworkImage(
+                                          video.thumbnailUrl!,
                                         ),
-                                      ),
-                                    if (video.duration != null)
-                                      Positioned(
-                                        bottom: 4,
-                                        right: 4,
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 4,
-                                            vertical: 2,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Theme.of(context).colorScheme.scrim.withValues(alpha: 0.87),
-                                            borderRadius: BorderRadius.circular(4),
-                                          ),
-                                          child: Text(
-                                            _formatDuration(video.duration),
-                                            style: TextStyle(
-                                              color: Theme.of(context).colorScheme.onPrimary,
-                                              fontSize: 10,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : null,
                               ),
-                            ),
-                            // Video info
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              child: Stack(
                                 children: [
-                                  Text(
-                                    video.title,
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
+                                  if (video.thumbnailUrl == null)
+                                    Center(
+                                      child: Icon(
+                                        Icons.play_circle_outline,
+                                        size: 40,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
+                                      ),
                                     ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    _formatDate(video.createdAt),
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  if (video.duration != null)
+                                    Positioned(
+                                      bottom: 4,
+                                      right: 4,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4,
+                                          vertical: 2,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .scrim
+                                              .withValues(alpha: 0.87),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          _formatDuration(video.duration),
+                                          style: TextStyle(
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onPrimary,
+                                            fontSize: 10,
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                  ),
                                 ],
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                          // Video info
+                          Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  video.title,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  _formatDate(video.createdAt),
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                  childCount: videos.length,
-                ),
+                    ),
+                  );
+                }, childCount: videos.length),
               ),
             ),
         ],

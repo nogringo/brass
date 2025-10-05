@@ -102,7 +102,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                             const SizedBox(width: 4),
                             Text(
                               _formatDuration(widget.video.duration),
-                              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                              style: TextStyle(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
                             ),
                           ],
                         ),
@@ -114,7 +118,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                             const SizedBox(width: 4),
                             Text(
                               widget.video.dimension!,
-                              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                              style: TextStyle(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
                             ),
                           ],
                         ),
@@ -125,7 +133,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           const SizedBox(width: 4),
                           Text(
                             _formatDate(widget.video.createdAt),
-                            style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                            style: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
                           ),
                         ],
                       ),
@@ -142,7 +154,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ChannelScreen(pubkey: widget.video.authorPubkey),
+                          builder: (context) =>
+                              ChannelScreen(pubkey: widget.video.authorPubkey),
                         ),
                       );
                     },
@@ -152,8 +165,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                       child: Row(
                         children: [
                           CircleAvatar(
-                            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                            child: Icon(Icons.person, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                            backgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerHighest,
+                            child: Icon(
+                              Icons.person,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -164,7 +184,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                                   'Published by',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
@@ -182,7 +204,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           ),
                           Icon(
                             Icons.chevron_right,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ],
                       ),
@@ -239,7 +263,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Center(
@@ -248,20 +274,26 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           Icon(
                             Icons.comment_outlined,
                             size: 48,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                           const SizedBox(height: 8),
                           Text(
                             'No comments yet',
                             style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             'Be the first to comment!',
                             style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                               fontSize: 12,
                             ),
                           ),

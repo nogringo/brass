@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'video_list_screen.dart';
-import 'short_videos_screen.dart';
+import 'short_videos/short_videos_view.dart';
 import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {

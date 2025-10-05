@@ -61,8 +61,9 @@ class Repository extends GetxController {
   }
 
   List<NostrVideo> getChannelVideos(String pubkey) {
-    return [...normalVideos, ...shortsVideos]
-        .where((video) => video.authorPubkey == pubkey)
-        .toList();
+    return [
+      ...normalVideos,
+      ...shortsVideos,
+    ].where((video) => video.authorPubkey == pubkey).toList();
   }
 }
