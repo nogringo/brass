@@ -252,11 +252,11 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
                                   children: [
                                     CircleAvatar(
                                       radius: 16,
-                                      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                                      backgroundColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0.3),
                                       child: Icon(
                                         Icons.person,
                                         size: 16,
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                        color: Theme.of(context).colorScheme.onSurface,
                                       ),
                                     ),
                                     const SizedBox(width: 8),
@@ -264,7 +264,7 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
                                       child: Text(
                                         '${video.authorPubkey.substring(0, 16)}...',
                                         style: TextStyle(
-                                          color: Theme.of(context).colorScheme.onPrimary,
+                                          color: Theme.of(context).colorScheme.onSurface,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 14,
                                         ),
@@ -275,7 +275,7 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
                                     Text(
                                       _formatDate(video.createdAt),
                                       style: TextStyle(
-                                        color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.7),
+                                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                                         fontSize: 12,
                                       ),
                                     ),
@@ -283,7 +283,7 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
                                     Icon(
                                       Icons.chevron_right,
                                       size: 16,
-                                      color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.7),
+                                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                                     ),
                                   ],
                                 ),
@@ -293,7 +293,7 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
                               Text(
                                 video.title,
                                 style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onPrimary,
+                                  color: Theme.of(context).colorScheme.onSurface,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                 ),
@@ -306,7 +306,7 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
                                 Text(
                                   video.description,
                                   style: TextStyle(
-                                    color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.9),
+                                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.9),
                                     fontSize: 14,
                                   ),
                                   maxLines: 3,
@@ -339,13 +339,13 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
                                 },
                                 icon: Container(
                                   padding: const EdgeInsets.all(8),
-                                  decoration: const BoxDecoration(
-                                    color: Color.fromRGBO(0, 0, 0, 0.5),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.5),
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(
                                     Icons.arrow_upward,
-                                    color: Theme.of(context).colorScheme.onPrimary,
+                                    color: Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
                               ),
@@ -361,13 +361,13 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
                                 },
                                 icon: Container(
                                   padding: const EdgeInsets.all(8),
-                                  decoration: const BoxDecoration(
-                                    color: Color.fromRGBO(0, 0, 0, 0.5),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.5),
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(
                                     Icons.arrow_downward,
-                                    color: Theme.of(context).colorScheme.onPrimary,
+                                    color: Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
                               ),
@@ -387,14 +387,14 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
                           return Center(
                             child: Container(
                               padding: const EdgeInsets.all(20),
-                              decoration: const BoxDecoration(
-                                color: Color.fromRGBO(0, 0, 0, 0.5),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.5),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
                                 Icons.play_arrow,
                                 size: 50,
-                                color: Theme.of(context).colorScheme.onPrimary,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                           );
