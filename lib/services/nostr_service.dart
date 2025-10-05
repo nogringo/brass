@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:ndk/ndk.dart';
 import 'package:ndk_rust_verifier/ndk_rust_verifier.dart';
 
@@ -98,7 +99,12 @@ class NostrService {
     final response = _ndk.requests.query(
       filters: [
         Filter(
-          kinds: kind != null ? [kind] : [34235, 34236], // NIP-71: 34235 = long videos, 34236 = short videos
+          kinds: kind != null
+              ? [kind]
+              : [
+                  34235,
+                  34236,
+                ], // NIP-71: 34235 = long videos, 34236 = short videos
           limit: limit,
         ),
       ],
@@ -112,7 +118,9 @@ class NostrService {
           yield video;
         }
       } catch (e) {
-        print('Error parsing video event: $e');
+        if (kDebugMode) {
+          print('Error parsing video event: $e');
+        }
       }
     }
   }

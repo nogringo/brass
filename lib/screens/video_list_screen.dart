@@ -32,7 +32,10 @@ class _VideoListScreenState extends State<VideoListScreen> {
 
     try {
       final kind = widget.videoType == VideoType.long ? 34235 : 34236;
-      await for (final video in _nostrService.fetchVideoEvents(limit: 50, kind: kind)) {
+      await for (final video in _nostrService.fetchVideoEvents(
+        limit: 50,
+        kind: kind,
+      )) {
         if (mounted) {
           setState(() {
             _videos.add(video);
@@ -70,7 +73,7 @@ class _VideoListScreenState extends State<VideoListScreen> {
     if (seconds == null) return '';
     final minutes = seconds ~/ 60;
     final remainingSeconds = seconds % 60;
-    return '${minutes}:${remainingSeconds.toString().padLeft(2, '0')}';
+    return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
   String _formatDate(DateTime date) {
@@ -94,7 +97,9 @@ class _VideoListScreenState extends State<VideoListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final title = widget.videoType == VideoType.long ? 'Long Videos' : 'Short Videos';
+    final title = widget.videoType == VideoType.long
+        ? 'Long Videos'
+        : 'Short Videos';
 
     return Scaffold(
       appBar: AppBar(
@@ -253,8 +258,7 @@ class _VideoListScreenState extends State<VideoListScreen> {
                                     const SizedBox(width: 4),
                                     Expanded(
                                       child: Text(
-                                        video.authorPubkey.substring(0, 16) +
-                                            '...',
+                                        '${video.authorPubkey.substring(0, 16)}...',
                                         style: TextStyle(
                                           fontSize: 11,
                                           color: Colors.grey[600],

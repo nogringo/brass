@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'video_list_screen.dart';
+import 'short_videos_screen.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,7 +15,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _screens = [
     const VideoListScreen(videoType: VideoType.long),
-    const VideoListScreen(videoType: VideoType.short),
+    const ShortVideosScreen(),
+    const ProfileScreen(),
   ];
 
   @override
@@ -36,7 +39,12 @@ class _HomeScreenState extends State<HomeScreen> {
           NavigationDestination(
             icon: Icon(Icons.movie_outlined),
             selectedIcon: Icon(Icons.movie),
-            label: 'Short',
+            label: 'Shorts',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Profile',
           ),
         ],
       ),
