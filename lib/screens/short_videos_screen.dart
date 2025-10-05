@@ -4,6 +4,7 @@ import 'package:media_kit_video/media_kit_video.dart';
 import 'package:toastification/toastification.dart';
 import '../models/nostr_video.dart';
 import '../repository.dart';
+import 'channel_screen.dart';
 
 class ShortVideosScreen extends StatefulWidget {
   const ShortVideosScreen({super.key});
@@ -236,38 +237,56 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               // Author
-                              Row(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 16,
-                                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                                    child: Icon(
-                                      Icons.person,
-                                      size: 16,
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      '${video.authorPubkey.substring(0, 16)}...',
-                                      style: TextStyle(
-                                        color: Theme.of(context).colorScheme.onPrimary,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 14,
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ChannelScreen(
+                                        pubkey: video.authorPubkey,
                                       ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                  ),
-                                  Text(
-                                    _formatDate(video.createdAt),
-                                    style: TextStyle(
+                                  );
+                                },
+                                child: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 16,
+                                      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                                      child: Icon(
+                                        Icons.person,
+                                        size: 16,
+                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        '${video.authorPubkey.substring(0, 16)}...',
+                                        style: TextStyle(
+                                          color: Theme.of(context).colorScheme.onPrimary,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 14,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    Text(
+                                      _formatDate(video.createdAt),
+                                      style: TextStyle(
+                                        color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.7),
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Icon(
+                                      Icons.chevron_right,
+                                      size: 16,
                                       color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.7),
-                                      fontSize: 12,
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                               const SizedBox(height: 12),
                               // Title
