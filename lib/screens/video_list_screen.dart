@@ -122,15 +122,18 @@ class _VideoListScreenState extends State<VideoListScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.video_library_outlined,
                     size: 64,
-                    color: Colors.grey,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'No videos found',
-                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
@@ -182,7 +185,7 @@ class _VideoListScreenState extends State<VideoListScreen> {
                               child: Container(
                                 width: double.infinity,
                                 decoration: BoxDecoration(
-                                  color: Colors.grey[300],
+                                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                                   image: video.thumbnailUrl != null
                                       ? DecorationImage(
                                           image: NetworkImage(
@@ -195,11 +198,11 @@ class _VideoListScreenState extends State<VideoListScreen> {
                                 child: Stack(
                                   children: [
                                     if (video.thumbnailUrl == null)
-                                      const Center(
+                                      Center(
                                         child: Icon(
                                           Icons.play_circle_outline,
                                           size: 40,
-                                          color: Colors.white70,
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                                         ),
                                       ),
                                     if (video.duration != null)
@@ -212,15 +215,15 @@ class _VideoListScreenState extends State<VideoListScreen> {
                                             vertical: 2,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: Colors.black87,
+                                            color: Theme.of(context).colorScheme.scrim.withValues(alpha: 0.87),
                                             borderRadius: BorderRadius.circular(
                                               4,
                                             ),
                                           ),
                                           child: Text(
                                             _formatDuration(video.duration),
-                                            style: const TextStyle(
-                                              color: Colors.white,
+                                            style: TextStyle(
+                                              color: Theme.of(context).colorScheme.onPrimary,
                                               fontSize: 10,
                                             ),
                                           ),
@@ -250,7 +253,7 @@ class _VideoListScreenState extends State<VideoListScreen> {
                                     _formatDate(video.createdAt),
                                     style: TextStyle(
                                       fontSize: 11,
-                                      color: Colors.grey[600],
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                 ],

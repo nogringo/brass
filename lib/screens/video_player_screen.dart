@@ -101,7 +101,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                             const SizedBox(width: 4),
                             Text(
                               _formatDuration(widget.video.duration),
-                              style: TextStyle(color: Colors.grey[700]),
+                              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                             ),
                           ],
                         ),
@@ -113,7 +113,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                             const SizedBox(width: 4),
                             Text(
                               widget.video.dimension!,
-                              style: TextStyle(color: Colors.grey[700]),
+                              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                             ),
                           ],
                         ),
@@ -124,7 +124,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           const SizedBox(width: 4),
                           Text(
                             _formatDate(widget.video.createdAt),
-                            style: TextStyle(color: Colors.grey[700]),
+                            style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
                         ],
                       ),
@@ -139,19 +139,19 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   Row(
                     children: [
                       CircleAvatar(
-                        backgroundColor: Colors.grey[300],
-                        child: const Icon(Icons.person, color: Colors.grey),
+                        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        child: Icon(Icons.person, color: Theme.of(context).colorScheme.onSurfaceVariant),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'Published by',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.grey,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
                             ),
                             const SizedBox(height: 2),
@@ -189,6 +189,67 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                       style: const TextStyle(fontSize: 14),
                     ),
                   ],
+
+                  // Comments section
+                  const SizedBox(height: 16),
+                  const Divider(),
+                  const SizedBox(height: 16),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Comments',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextButton.icon(
+                        onPressed: () {
+                          // TODO: Implement add comment
+                        },
+                        icon: const Icon(Icons.add_comment_outlined, size: 20),
+                        label: const Text('Add'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Comments list placeholder
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.comment_outlined,
+                            size: 48,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'No comments yet',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Be the first to comment!',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

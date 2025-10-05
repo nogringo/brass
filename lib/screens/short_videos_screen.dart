@@ -158,15 +158,18 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.movie_outlined,
                     size: 64,
-                    color: Colors.grey,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'No short videos found',
-                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
@@ -215,12 +218,12 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
                       left: 0,
                       right: 0,
                       child: Container(
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           gradient: LinearGradient(
                             begin: Alignment.bottomCenter,
                             end: Alignment.topCenter,
                             colors: [
-                              Colors.black.withValues(alpha: 0.7),
+                              Color.fromRGBO(0, 0, 0, 0.7),
                               Colors.transparent,
                             ],
                           ),
@@ -237,19 +240,19 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
                                 children: [
                                   CircleAvatar(
                                     radius: 16,
-                                    backgroundColor: Colors.grey[300],
-                                    child: const Icon(
+                                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                                    child: Icon(
                                       Icons.person,
                                       size: 16,
-                                      color: Colors.grey,
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
                                       '${video.authorPubkey.substring(0, 16)}...',
-                                      style: const TextStyle(
-                                        color: Colors.white,
+                                      style: TextStyle(
+                                        color: Theme.of(context).colorScheme.onPrimary,
                                         fontWeight: FontWeight.w600,
                                         fontSize: 14,
                                       ),
@@ -259,8 +262,8 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
                                   ),
                                   Text(
                                     _formatDate(video.createdAt),
-                                    style: const TextStyle(
-                                      color: Color.fromRGBO(255, 255, 255, 0.7),
+                                    style: TextStyle(
+                                      color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.7),
                                       fontSize: 12,
                                     ),
                                   ),
@@ -270,8 +273,8 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
                               // Title
                               Text(
                                 video.title,
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onPrimary,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                 ),
@@ -283,8 +286,8 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
                                 const SizedBox(height: 8),
                                 Text(
                                   video.description,
-                                  style: const TextStyle(
-                                    color: Color.fromRGBO(255, 255, 255, 0.9),
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.9),
                                     fontSize: 14,
                                   ),
                                   maxLines: 3,
@@ -321,9 +324,9 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
                                     color: Color.fromRGBO(0, 0, 0, 0.5),
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.arrow_upward,
-                                    color: Colors.white,
+                                    color: Theme.of(context).colorScheme.onPrimary,
                                   ),
                                 ),
                               ),
@@ -343,9 +346,9 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
                                     color: Color.fromRGBO(0, 0, 0, 0.5),
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.arrow_downward,
-                                    color: Colors.white,
+                                    color: Theme.of(context).colorScheme.onPrimary,
                                   ),
                                 ),
                               ),
@@ -369,10 +372,10 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
                                 color: Color.fromRGBO(0, 0, 0, 0.5),
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.play_arrow,
                                 size: 50,
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.onPrimary,
                               ),
                             ),
                           );
