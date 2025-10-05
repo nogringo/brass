@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../short_videos_controller.dart';
 import '../widgets/action_buttons.dart';
 import '../widgets/description_view.dart';
+import '../widgets/video_player_widget.dart';
 
 /// Medium screen layout for short videos (tablets)
 /// Optimized for screens 600-1024dp width
@@ -10,8 +10,6 @@ class MediumLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = ShortVideosController.to;
-
     return Row(
       children: [
         const Spacer(),
@@ -22,7 +20,7 @@ class MediumLayout extends StatelessWidget {
               aspectRatio: 9 / 16,
               child: Stack(
                 children: [
-                  controller.videoPlayer,
+                  const VideoPlayerWidget(),
                   const Positioned(
                     bottom: 0,
                     right: 0,

@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import '../short_videos_controller.dart';
 import '../widgets/action_buttons.dart';
 import '../widgets/description_view.dart';
 import '../widgets/swipe_buttons.dart';
+import '../widgets/video_player_widget.dart';
 
 class LargeLayout extends StatelessWidget {
   const LargeLayout({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = ShortVideosController.to;
-
     return Row(
       children: [
-        Spacer(),
+        const Spacer(),
         Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
@@ -21,7 +19,7 @@ class LargeLayout extends StatelessWidget {
               aspectRatio: 9 / 16,
               child: Stack(
                 children: [
-                  controller.videoPlayer,
+                  const VideoPlayerWidget(),
                   Positioned(
                     bottom: 0,
                     right: 0,
