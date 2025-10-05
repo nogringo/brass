@@ -13,7 +13,7 @@ class ShortVideosScreen extends StatefulWidget {
   State<ShortVideosScreen> createState() => _ShortVideosScreenState();
 }
 
-class _ShortVideosScreenState extends State<ShortVideosScreen> {
+class _ShortVideosScreenState extends State<ShortVideosScreen> with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   final Repository _repository = Repository.to;
   final PageController _pageController = PageController();
   final Map<int, Player> _players = {};
@@ -25,8 +25,12 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
   List<NostrVideo> get _videos => _repository.shortsVideos;
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadVideos();
 
     _pageController.addListener(() {
@@ -35,6 +39,19 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
         _onPageChanged(page);
       }
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    // Pause video when app goes to background or screen is not visible
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      _players[_currentIndex]?.pause();
+    } else if (state == AppLifecycleState.resumed) {
+      // Resume playing when app comes back
+      _players[_currentIndex]?.play();
+    }
   }
 
   void _loadVideos() async {
@@ -50,7 +67,7 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
         setState(() {
           // Preload first video
           if (_videos.isNotEmpty) {
-            _initializePlayer(0);
+            _initializePlayer(0, autoPlay: true);
           }
         });
       }
@@ -75,7 +92,7 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
     }
   }
 
-  void _initializePlayer(int index) {
+  void _initializePlayer(int index, {bool autoPlay = false}) {
     if (_players.containsKey(index) || index >= _videos.length) return;
 
     final player = Player();
@@ -84,17 +101,17 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
     _players[index] = player;
     _controllers[index] = controller;
 
-    player.open(Media(_videos[index].videoUrl));
+    player.open(Media(_videos[index].videoUrl), play: autoPlay);
     player.setPlaylistMode(PlaylistMode.loop);
-
-    if (index == _currentIndex) {
-      player.play();
-    }
   }
 
   void _onPageChanged(int index) {
-    // Pause previous video
-    _players[_currentIndex]?.pause();
+    // Pause all videos except the current one
+    _players.forEach((key, player) {
+      if (key != index) {
+        player.pause();
+      }
+    });
 
     setState(() {
       _currentIndex = index;
@@ -102,13 +119,14 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
 
     // Initialize and play current video
     if (!_players.containsKey(index)) {
-      _initializePlayer(index);
+      _initializePlayer(index, autoPlay: true);
+    } else {
+      _players[index]?.play();
     }
-    _players[index]?.play();
 
-    // Preload next video
+    // Preload next video (without auto-play)
     if (index + 1 < _videos.length && !_players.containsKey(index + 1)) {
-      _initializePlayer(index + 1);
+      _initializePlayer(index + 1, autoPlay: false);
     }
 
     // Dispose of videos far away
@@ -123,6 +141,7 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _pageController.dispose();
     for (var player in _players.values) {
       player.dispose();
@@ -151,6 +170,7 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: _isLoading && _videos.isEmpty
           ? const Center(child: CircularProgressIndicator())
