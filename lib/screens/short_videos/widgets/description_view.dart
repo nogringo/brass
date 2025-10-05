@@ -48,7 +48,8 @@ class DescriptionView extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            controller.currentMetadata?.name ?? controller.channelName,
+                            controller.currentMetadata?.name ??
+                                controller.channelName,
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,

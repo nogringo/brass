@@ -178,21 +178,63 @@ class ShortVideosController extends GetxController {
     isSubscribed.toggle();
   }
 
-  void onLikeTap() {
+  void onLikeTap() async {
+    if (currentVideo == null) return;
+
     if (isLiked.value) {
+      // Remove like (would need to delete the reaction event)
       isLiked.value = false;
     } else {
-      isLiked.value = true;
-      isDisliked.value = false;
+      // Send like reaction to Nostr
+      try {
+        final ndk = Repository.ndk;
+        final event = Nip01Event(
+          pubKey: ndk.accounts.getPublicKey()!,
+          kind: 7,
+          content: '+',
+          tags: [
+            ['e', currentVideo!.id],
+            ['p', currentVideo!.authorPubkey],
+          ],
+        );
+        ndk.broadcast.broadcast(nostrEvent: event);
+        isLiked.value = true;
+        isDisliked.value = false;
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error sending like: $e');
+        }
+      }
     }
   }
 
-  void onDislikeTap() {
+  void onDislikeTap() async {
+    if (currentVideo == null) return;
+
     if (isDisliked.value) {
+      // Remove dislike (would need to delete the reaction event)
       isDisliked.value = false;
     } else {
-      isDisliked.value = true;
-      isLiked.value = false;
+      // Send dislike reaction to Nostr
+      try {
+        final ndk = Repository.ndk;
+        final event = Nip01Event(
+          pubKey: ndk.accounts.getPublicKey()!,
+          kind: 7,
+          content: '-',
+          tags: [
+            ['e', currentVideo!.id],
+            ['p', currentVideo!.authorPubkey],
+          ],
+        );
+        ndk.broadcast.broadcast(nostrEvent: event);
+        isDisliked.value = true;
+        isLiked.value = false;
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error sending dislike: $e');
+        }
+      }
     }
   }
 
@@ -227,41 +269,47 @@ class _ShortVideoAudioHandler extends BaseAudioHandler {
   final ShortVideosController controller;
 
   _ShortVideoAudioHandler(this.controller) {
-    playbackState.add(PlaybackState(
-      controls: [
-        MediaControl.skipToPrevious,
-        MediaControl.pause,
-        MediaControl.skipToNext,
-      ],
-      playing: true,
-      processingState: AudioProcessingState.ready,
-    ));
+    playbackState.add(
+      PlaybackState(
+        controls: [
+          MediaControl.skipToPrevious,
+          MediaControl.pause,
+          MediaControl.skipToNext,
+        ],
+        playing: true,
+        processingState: AudioProcessingState.ready,
+      ),
+    );
   }
 
   @override
   Future<void> play() async {
     controller.resumeVideo();
-    playbackState.add(playbackState.value.copyWith(
-      controls: [
-        MediaControl.skipToPrevious,
-        MediaControl.pause,
-        MediaControl.skipToNext,
-      ],
-      playing: true,
-    ));
+    playbackState.add(
+      playbackState.value.copyWith(
+        controls: [
+          MediaControl.skipToPrevious,
+          MediaControl.pause,
+          MediaControl.skipToNext,
+        ],
+        playing: true,
+      ),
+    );
   }
 
   @override
   Future<void> pause() async {
     controller.pauseVideo();
-    playbackState.add(playbackState.value.copyWith(
-      controls: [
-        MediaControl.skipToPrevious,
-        MediaControl.play,
-        MediaControl.skipToNext,
-      ],
-      playing: false,
-    ));
+    playbackState.add(
+      playbackState.value.copyWith(
+        controls: [
+          MediaControl.skipToPrevious,
+          MediaControl.play,
+          MediaControl.skipToNext,
+        ],
+        playing: false,
+      ),
+    );
   }
 
   @override

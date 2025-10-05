@@ -7,13 +7,41 @@ class ActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = ShortVideosController.to;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        IconButton(onPressed: () {}, icon: const Icon(Icons.thumb_up)),
-        IconButton(onPressed: () {}, icon: const Icon(Icons.thumb_down)),
-        IconButton(onPressed: () {}, icon: const Icon(Icons.comment)),
-        IconButton(onPressed: () {}, icon: const Icon(Icons.share)),
+        IconButton(
+          onPressed: controller.onLikeTap,
+          icon: Obx(
+            () => Icon(
+              controller.isLiked.value
+                  ? Icons.thumb_up
+                  : Icons.thumb_up_outlined,
+              color: controller.isLiked.value ? Colors.blue : Colors.white,
+            ),
+          ),
+        ),
+        IconButton(
+          onPressed: controller.onDislikeTap,
+          icon: Obx(
+            () => Icon(
+              controller.isDisliked.value
+                  ? Icons.thumb_down
+                  : Icons.thumb_down_outlined,
+              color: controller.isDisliked.value ? Colors.red : Colors.white,
+            ),
+          ),
+        ),
+        IconButton(
+          onPressed: controller.onCommentTap,
+          icon: const Icon(Icons.comment),
+        ),
+        IconButton(
+          onPressed: controller.onShareTap,
+          icon: const Icon(Icons.share),
+        ),
         GetBuilder<ShortVideosController>(
           builder: (controller) {
             return GestureDetector(
