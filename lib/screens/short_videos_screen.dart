@@ -339,58 +339,108 @@ class _ShortVideosScreenState extends State<ShortVideosScreen> with AutomaticKee
                       ),
                     ),
 
-                    // Navigation buttons
+                    // Action buttons
                     Positioned(
                       right: 16,
-                      top: 0,
-                      bottom: 0,
+                      bottom: 100,
                       child: SafeArea(
+                        top: false,
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Previous button
-                            if (index > 0)
-                              IconButton(
-                                onPressed: () {
-                                  _pageController.previousPage(
-                                    duration: const Duration(milliseconds: 300),
-                                    curve: Curves.easeInOut,
-                                  );
-                                },
-                                icon: Container(
-                                  padding: const EdgeInsets.all(8),
+                            // Like button
+                            Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
                                     color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.5),
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(
-                                    Icons.arrow_upward,
+                                    Icons.thumb_up_outlined,
+                                    size: 28,
                                     color: Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
-                              ),
-                            const SizedBox(height: 16),
-                            // Next button
-                            if (index < _videos.length - 1)
-                              IconButton(
-                                onPressed: () {
-                                  _pageController.nextPage(
-                                    duration: const Duration(milliseconds: 300),
-                                    curve: Curves.easeInOut,
-                                  );
-                                },
-                                icon: Container(
-                                  padding: const EdgeInsets.all(8),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '0',
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.onSurface,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            // Dislike button
+                            Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
                                     color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.5),
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(
-                                    Icons.arrow_downward,
+                                    Icons.thumb_down_outlined,
+                                    size: 28,
                                     color: Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '0',
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.onSurface,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            // Comment button
+                            Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.5),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.chat_bubble_outline,
+                                    size: 28,
+                                    color: Theme.of(context).colorScheme.onSurface,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '0',
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.onSurface,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            // Share button
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.5),
+                                shape: BoxShape.circle,
                               ),
+                              child: Icon(
+                                Icons.share,
+                                size: 28,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
                           ],
                         ),
                       ),
