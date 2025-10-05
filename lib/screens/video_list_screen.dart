@@ -161,6 +161,7 @@ class _VideoListScreenState extends State<VideoListScreen> {
                     }
 
                     final video = _videos[index];
+                    print(video.thumbnailUrl);
                     return Card(
                       clipBehavior: Clip.antiAlias,
                       child: InkWell(

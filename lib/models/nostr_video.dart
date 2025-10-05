@@ -40,6 +40,14 @@ class NostrVideo {
         case 'duration':
           duration = int.tryParse(tag[1]);
           break;
+        case 'image':
+          // NIP-71: image tag contains thumbnail URL
+          thumbnailUrl ??= tag[1];
+          break;
+        case 'thumb':
+          // Alternative thumbnail tag
+          thumbnailUrl ??= tag[1];
+          break;
         case 'imeta':
           // Parse imeta tag for video URL, thumbnail, and dimensions
           for (var i = 1; i < tag.length; i++) {
@@ -50,11 +58,10 @@ class NostrVideo {
                   url.contains('.webm') ||
                   url.contains('.m3u8')) {
                 videoUrl = url;
-              } else if (url.contains('.jpg') ||
-                  url.contains('.png') ||
-                  url.contains('.webp')) {
-                thumbnailUrl = url;
               }
+            } else if (part.startsWith('image ')) {
+              // Thumbnail in imeta
+              thumbnailUrl ??= part.substring(6);
             } else if (part.startsWith('dim ')) {
               dimension = part.substring(4);
             }
