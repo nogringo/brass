@@ -6,8 +6,6 @@ class ShortVideosScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ShortVideosView(),
-    );
+    return Scaffold(body: ShortVideosView());
   }
 }

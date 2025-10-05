@@ -31,7 +31,10 @@ class LargeLayout extends StatelessWidget {
                 ],
               ),
             ),
-            Padding(padding: const EdgeInsets.only(left: 8, bottom: 8), child: ActionButtons()),
+            Padding(
+              padding: const EdgeInsets.only(left: 8, bottom: 8),
+              child: ActionButtons(),
+            ),
           ],
         ),
         Spacer(),

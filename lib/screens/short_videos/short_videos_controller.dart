@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
@@ -10,9 +11,12 @@ class ShortVideosController extends GetxController {
 
   final Repository _repository = Repository.to;
 
-  // Video player
+  // Video players
   Player? _player;
   VideoController? _videoController;
+
+  // Preload next video player
+  Player? _nextPlayer;
 
   // Current video state
   final currentIndex = 0.obs;
@@ -20,7 +24,8 @@ class ShortVideosController extends GetxController {
 
   // Video data
   List<NostrVideo> get videos => _repository.shortsVideos;
-  NostrVideo? get currentVideo => videos.isNotEmpty ? videos[currentIndex.value] : null;
+  NostrVideo? get currentVideo =>
+      videos.isNotEmpty ? videos[currentIndex.value] : null;
 
   Widget get videoPlayer {
     if (_videoController == null) {
@@ -31,13 +36,12 @@ class ShortVideosController extends GetxController {
         ),
       );
     }
-    return Video(
-      controller: _videoController!,
-      controls: NoVideoControls,
-    );
+    return Video(controller: _videoController!, controls: NoVideoControls);
   }
 
-  String get channelName => currentVideo != null ? '@${currentVideo!.authorPubkey.substring(0, 12)}' : '@username';
+  String get channelName => currentVideo != null
+      ? '@${currentVideo!.authorPubkey.substring(0, 12)}'
+      : '@username';
   String get videoTitle => currentVideo?.title ?? 'Loading...';
   String get videoDescription => currentVideo?.description ?? '';
 
@@ -59,6 +63,7 @@ class ShortVideosController extends GetxController {
   @override
   void onClose() {
     _player?.dispose();
+    _nextPlayer?.dispose();
     super.onClose();
   }
 
@@ -73,7 +78,9 @@ class ShortVideosController extends GetxController {
         _initializePlayer();
       }
     } catch (e) {
-      print('Error loading videos: $e');
+      if (kDebugMode) {
+        print('Error loading videos: $e');
+      }
     } finally {
       isLoading.value = false;
     }
@@ -93,7 +100,29 @@ class ShortVideosController extends GetxController {
     _player!.open(Media(currentVideo!.videoUrl), play: true);
     _player!.setPlaylistMode(PlaylistMode.loop);
 
+    // Preload next video
+    _preloadNextVideo();
+
     update();
+  }
+
+  void _preloadNextVideo() {
+    final nextIndex = currentIndex.value + 1;
+
+    // Dispose previous preloaded player
+    _nextPlayer?.dispose();
+    _nextPlayer = null;
+
+    // Check if there's a next video
+    if (nextIndex < videos.length) {
+      final nextVideo = videos[nextIndex];
+
+      // Create player for next video
+      _nextPlayer = Player();
+
+      // Preload without playing
+      _nextPlayer!.open(Media(nextVideo.videoUrl), play: false);
+    }
   }
 
   // Callbacks
