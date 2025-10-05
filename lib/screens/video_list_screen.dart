@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
 import '../models/nostr_video.dart';
@@ -167,9 +166,6 @@ class _VideoListScreenState extends State<VideoListScreen> {
                     }
 
                     final video = _videos[index];
-                    if (kDebugMode) {
-                      print(video.thumbnailUrl);
-                    }
                     return Card(
                       clipBehavior: Clip.antiAlias,
                       child: InkWell(

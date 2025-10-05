@@ -11,6 +11,7 @@ class Repository extends GetxController {
   List<NostrVideo> normalVideos = [];
   List<NostrVideo> shortsVideos = [];
   final Map<String, NostrChannel> _channelsCache = {};
+  final Map<String, Metadata?> usersMetadata = {};
 
   Future<void> fetchVideoEvents({int limit = 50, int? kind}) async {
     // NIP-71: kind 21 = normal videos, kind 22 = short videos
@@ -33,6 +34,19 @@ class Repository extends GetxController {
         if (shortsVideos.where((v) => v.id == video.id).isNotEmpty) continue;
         shortsVideos.add(video);
       }
+
+      // Fetch metadata for video author
+      if (!usersMetadata.containsKey(event.pubKey)) {
+        try {
+          final metadata = await ndk.metadata.loadMetadata(event.pubKey);
+          usersMetadata[event.pubKey] = metadata;
+        } catch (e) {
+          if (kDebugMode) {
+            print('Error loading metadata for ${event.pubKey}: $e');
+          }
+        }
+      }
+
       update();
     }
   }

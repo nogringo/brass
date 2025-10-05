@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:ndk/entities.dart';
 import '../../models/nostr_video.dart';
 import '../../repository.dart';
 import '../channel_screen.dart';
@@ -22,11 +23,14 @@ class ShortVideosController extends GetxController {
   // Current video state
   final currentIndex = 0.obs;
   final isLoading = true.obs;
+  final isPlaying = true.obs;
 
   // Video data
   List<NostrVideo> get videos => _repository.shortsVideos;
   NostrVideo? get currentVideo =>
       videos.isNotEmpty ? videos[currentIndex.value] : null;
+  Metadata? get currentMetadata =>
+      _repository.usersMetadata[currentVideo?.authorPubkey];
 
   Widget get videoPlayer {
     if (_videoController == null) {
@@ -66,6 +70,24 @@ class ShortVideosController extends GetxController {
     _player?.dispose();
     _nextPlayer?.dispose();
     super.onClose();
+  }
+
+  void pauseVideo() {
+    _player?.pause();
+    isPlaying.value = false;
+  }
+
+  void resumeVideo() {
+    _player?.play();
+    isPlaying.value = true;
+  }
+
+  void togglePlayPause() {
+    if (isPlaying.value) {
+      pauseVideo();
+    } else {
+      resumeVideo();
+    }
   }
 
   Future<void> _loadVideos() async {

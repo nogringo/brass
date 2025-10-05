@@ -8,7 +8,32 @@ class VideoPlayerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ShortVideosController>(
-      builder: (controller) => controller.videoPlayer,
+      builder: (controller) => GestureDetector(
+        onTap: controller.togglePlayPause,
+        child: Stack(
+          children: [
+            controller.videoPlayer,
+            Obx(
+              () => !controller.isPlaying.value
+                  ? Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.5),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.play_arrow,
+                          color: Colors.white,
+                          size: 48,
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ndk/ndk.dart';
-import 'package:nostr_widgets/nostr_widgets.dart';
 import '../short_videos_controller.dart';
 
 /// Description view widget for short videos
@@ -35,14 +33,22 @@ class DescriptionView extends StatelessWidget {
                       onTap: controller.onChannelTap,
                       child: Row(
                         children: [
-                          NPicture(
-                            ndk: Get.find<Ndk>(),
-                            pubkey: controller.currentVideo?.authorPubkey,
-                            circleAvatarRadius: 16,
+                          CircleAvatar(
+                            radius: 16,
+                            backgroundImage:
+                                controller
+                                        .currentMetadata
+                                        ?.picture
+                                        ?.isNotEmpty ==
+                                    true
+                                ? NetworkImage(
+                                    controller.currentMetadata!.picture!,
+                                  )
+                                : null,
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            controller.channelName,
+                            controller.currentMetadata?.name ?? controller.channelName,
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,

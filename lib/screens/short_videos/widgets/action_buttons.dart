@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ndk/ndk.dart';
-import 'package:nostr_widgets/nostr_widgets.dart';
 import '../short_videos_controller.dart';
 
 class ActionButtons extends StatelessWidget {
@@ -9,8 +7,6 @@ class ActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = ShortVideosController.to;
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -18,13 +14,19 @@ class ActionButtons extends StatelessWidget {
         IconButton(onPressed: () {}, icon: const Icon(Icons.thumb_down)),
         IconButton(onPressed: () {}, icon: const Icon(Icons.comment)),
         IconButton(onPressed: () {}, icon: const Icon(Icons.share)),
-        GestureDetector(
-          onTap: controller.onChannelTap,
-          child: NPicture(
-            ndk: Get.find<Ndk>(),
-            pubkey: controller.currentVideo?.authorPubkey,
-            circleAvatarRadius: 16,
-          ),
+        GetBuilder<ShortVideosController>(
+          builder: (controller) {
+            return GestureDetector(
+              onTap: controller.onChannelTap,
+              child: CircleAvatar(
+                radius: 16,
+                backgroundImage:
+                    controller.currentMetadata?.picture?.isNotEmpty == true
+                    ? NetworkImage(controller.currentMetadata!.picture!)
+                    : null,
+              ),
+            );
+          },
         ),
       ],
     );
