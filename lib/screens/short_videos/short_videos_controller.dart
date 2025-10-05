@@ -5,6 +5,7 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import '../../models/nostr_video.dart';
 import '../../repository.dart';
+import '../channel_screen.dart';
 
 class ShortVideosController extends GetxController {
   static ShortVideosController get to => Get.find();
@@ -127,7 +128,9 @@ class ShortVideosController extends GetxController {
 
   // Callbacks
   void onChannelTap() {
-    // Navigate to channel
+    if (currentVideo == null) return;
+
+    Get.to(() => ChannelScreen(pubkey: currentVideo!.authorPubkey));
   }
 
   void onSubscribeTap() {
