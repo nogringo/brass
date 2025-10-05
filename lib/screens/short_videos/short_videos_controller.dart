@@ -228,7 +228,11 @@ class _ShortVideoAudioHandler extends BaseAudioHandler {
 
   _ShortVideoAudioHandler(this.controller) {
     playbackState.add(PlaybackState(
-      controls: [MediaControl.pause],
+      controls: [
+        MediaControl.skipToPrevious,
+        MediaControl.pause,
+        MediaControl.skipToNext,
+      ],
       playing: true,
       processingState: AudioProcessingState.ready,
     ));
@@ -238,7 +242,11 @@ class _ShortVideoAudioHandler extends BaseAudioHandler {
   Future<void> play() async {
     controller.resumeVideo();
     playbackState.add(playbackState.value.copyWith(
-      controls: [MediaControl.pause],
+      controls: [
+        MediaControl.skipToPrevious,
+        MediaControl.pause,
+        MediaControl.skipToNext,
+      ],
       playing: true,
     ));
   }
@@ -247,8 +255,22 @@ class _ShortVideoAudioHandler extends BaseAudioHandler {
   Future<void> pause() async {
     controller.pauseVideo();
     playbackState.add(playbackState.value.copyWith(
-      controls: [MediaControl.play],
+      controls: [
+        MediaControl.skipToPrevious,
+        MediaControl.play,
+        MediaControl.skipToNext,
+      ],
       playing: false,
     ));
+  }
+
+  @override
+  Future<void> skipToNext() async {
+    controller.onNextTap();
+  }
+
+  @override
+  Future<void> skipToPrevious() async {
+    controller.onPreviousTap();
   }
 }
