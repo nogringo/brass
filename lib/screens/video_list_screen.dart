@@ -169,7 +169,8 @@ class _VideoListScreenState extends State<VideoListScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => VideoPlayerScreen(video: video),
+                              builder: (context) =>
+                                  VideoPlayerScreen(video: video),
                             ),
                           );
                         },
@@ -184,7 +185,9 @@ class _VideoListScreenState extends State<VideoListScreen> {
                                   color: Colors.grey[300],
                                   image: video.thumbnailUrl != null
                                       ? DecorationImage(
-                                          image: NetworkImage(video.thumbnailUrl!),
+                                          image: NetworkImage(
+                                            video.thumbnailUrl!,
+                                          ),
                                           fit: BoxFit.cover,
                                         )
                                       : null,
@@ -210,7 +213,9 @@ class _VideoListScreenState extends State<VideoListScreen> {
                                           ),
                                           decoration: BoxDecoration(
                                             color: Colors.black87,
-                                            borderRadius: BorderRadius.circular(4),
+                                            borderRadius: BorderRadius.circular(
+                                              4,
+                                            ),
                                           ),
                                           child: Text(
                                             _formatDuration(video.duration),
@@ -258,7 +263,7 @@ class _VideoListScreenState extends State<VideoListScreen> {
                   },
                 );
               },
-            )
+            ),
     );
   }
 }
