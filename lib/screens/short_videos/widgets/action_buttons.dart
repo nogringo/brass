@@ -6,6 +6,7 @@ class ActionButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(onPressed: () {}, icon: Icon(Icons.thumb_up)),
         IconButton(onPressed: () {}, icon: Icon(Icons.thumb_down)),
