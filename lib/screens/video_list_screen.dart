@@ -141,150 +141,123 @@ class _VideoListScreenState extends State<VideoListScreen> {
                 ],
               ),
             )
-          : ListView.builder(
-              itemCount: _videos.length + (_isLoading ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index == _videos.length) {
-                  return const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                }
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                final width = constraints.maxWidth;
+                final crossAxisCount = (width / 300).floor().clamp(1, 6);
 
-                final video = _videos[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+                return GridView.builder(
+                  padding: const EdgeInsets.all(8),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    childAspectRatio: 16 / 12,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
                   ),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => VideoPlayerScreen(video: video),
-                        ),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Thumbnail
-                          Container(
-                            width: 120,
-                            height: 68,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(8),
-                              image: video.thumbnailUrl != null
-                                  ? DecorationImage(
-                                      image: NetworkImage(video.thumbnailUrl!),
-                                      fit: BoxFit.cover,
-                                    )
-                                  : null,
+                  itemCount: _videos.length + (_isLoading ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index == _videos.length) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    final video = _videos[index];
+                    return Card(
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => VideoPlayerScreen(video: video),
                             ),
-                            child: Stack(
-                              children: [
-                                if (video.thumbnailUrl == null)
-                                  const Center(
-                                    child: Icon(
-                                      Icons.play_circle_outline,
-                                      size: 40,
-                                      color: Colors.white70,
-                                    ),
-                                  ),
-                                if (video.duration != null)
-                                  Positioned(
-                                    bottom: 4,
-                                    right: 4,
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 4,
-                                        vertical: 2,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.black87,
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: Text(
-                                        _formatDuration(video.duration),
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 10,
+                          );
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Thumbnail
+                            Expanded(
+                              child: Container(
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  image: video.thumbnailUrl != null
+                                      ? DecorationImage(
+                                          image: NetworkImage(video.thumbnailUrl!),
+                                          fit: BoxFit.cover,
+                                        )
+                                      : null,
+                                ),
+                                child: Stack(
+                                  children: [
+                                    if (video.thumbnailUrl == null)
+                                      const Center(
+                                        child: Icon(
+                                          Icons.play_circle_outline,
+                                          size: 40,
+                                          color: Colors.white70,
                                         ),
                                       ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          // Video info
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  video.title,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
+                                    if (video.duration != null)
+                                      Positioned(
+                                        bottom: 4,
+                                        right: 4,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 4,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.black87,
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                          child: Text(
+                                            _formatDuration(video.duration),
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
                                 ),
-                                const SizedBox(height: 4),
-                                if (video.description.isNotEmpty)
+                              ),
+                            ),
+                            // Video info
+                            Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
                                   Text(
-                                    video.description,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey[600],
+                                    video.title,
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.person_outline,
-                                      size: 12,
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    _formatDate(video.createdAt),
+                                    style: TextStyle(
+                                      fontSize: 11,
                                       color: Colors.grey[600],
                                     ),
-                                    const SizedBox(width: 4),
-                                    Expanded(
-                                      child: Text(
-                                        '${video.authorPubkey.substring(0, 16)}...',
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          color: Colors.grey[600],
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  _formatDate(video.createdAt),
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: Colors.grey[600],
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 );
               },
-            ),
+            )
     );
   }
 }
