@@ -172,6 +172,7 @@ class ShortVideosController extends GetxController {
   void onChannelTap() {
     if (currentVideo == null) return;
 
+    pauseVideo();
     Get.to(() => ChannelScreen(pubkey: currentVideo!.authorPubkey));
   }
 
