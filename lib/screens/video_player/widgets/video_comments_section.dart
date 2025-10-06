@@ -110,9 +110,10 @@ class _VideoCommentsSectionState extends State<VideoCommentsSection> {
             itemBuilder: (context, index) {
               final comment = widget.comments[index];
               final metadata = widget.commentsMetadata[comment.pubKey];
-              final authorName = metadata?.name ??
-                                 metadata?.displayName ??
-                                 '${comment.pubKey.substring(0, 8)}...';
+              final authorName =
+                  metadata?.name ??
+                  metadata?.displayName ??
+                  '${comment.pubKey.substring(0, 8)}...';
 
               return Container(
                 padding: const EdgeInsets.all(12),
@@ -125,7 +126,9 @@ class _VideoCommentsSectionState extends State<VideoCommentsSection> {
                   children: [
                     CircleAvatar(
                       radius: 16,
-                      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainer,
                       backgroundImage: metadata?.picture?.isNotEmpty == true
                           ? NetworkImage(metadata!.picture!)
                           : null,
@@ -134,7 +137,9 @@ class _VideoCommentsSectionState extends State<VideoCommentsSection> {
                           : Icon(
                               Icons.person,
                               size: 16,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                     ),
                     const SizedBox(width: 12),
@@ -149,7 +154,9 @@ class _VideoCommentsSectionState extends State<VideoCommentsSection> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14,
-                                  color: Theme.of(context).colorScheme.onSurface,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -157,7 +164,9 @@ class _VideoCommentsSectionState extends State<VideoCommentsSection> {
                                 _formatTimestamp(comment.createdAt),
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ],

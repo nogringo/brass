@@ -64,7 +64,8 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
                           title: const Text('Normal Video'),
                           value: false,
                           groupValue: widget.isShortVideo,
-                          onChanged: (value) => widget.onVideoTypeChanged(value!),
+                          onChanged: (value) =>
+                              widget.onVideoTypeChanged(value!),
                         ),
                       ),
                       Expanded(
@@ -72,7 +73,8 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
                           title: const Text('Short Video'),
                           value: true,
                           groupValue: widget.isShortVideo,
-                          onChanged: (value) => widget.onVideoTypeChanged(value!),
+                          onChanged: (value) =>
+                              widget.onVideoTypeChanged(value!),
                         ),
                       ),
                     ],
@@ -82,6 +84,38 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
             ),
           ),
           const SizedBox(height: 16),
+
+          // Thumbnail preview for YouTube videos
+          if (isYouTube && widget.thumbnailUrlController.text.isNotEmpty)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Thumbnail',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    widget.thumbnailUrlController.text,
+                    height: 200,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        height: 200,
+                        color: Colors.grey[300],
+                        child: const Center(
+                          child: Icon(Icons.broken_image, size: 50),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
 
           // Title field
           TextFormField(
@@ -138,19 +172,21 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
           ],
 
           // Publish button
-          Obx(() => FilledButton(
-            onPressed: controller.isUploading.value ? null : widget.onPublish,
-            child: controller.isUploading.value
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
-                : const Text('Publish Video'),
-          )),
+          Obx(
+            () => FilledButton(
+              onPressed: controller.isUploading.value ? null : widget.onPublish,
+              child: controller.isUploading.value
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Text('Publish Video'),
+            ),
+          ),
         ],
       ),
     );

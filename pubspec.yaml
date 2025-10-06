@@ -20,6 +20,7 @@ dependencies:
   ndk_rust_verifier: ^0.4.1
   nostr_widgets: ^1.1.0
   toastification: ^3.0.3
+  youtube_explode_dart: ^2.5.2
 
 dev_dependencies:
   flutter_test:
