@@ -14,9 +14,12 @@ class LoginScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Login with Nostr')),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: NLogin(ndk: ndk, onLoggedIn: () {
-          Get.back();
-        },),
+        child: NLogin(
+          ndk: ndk,
+          onLoggedIn: () {
+            Get.back();
+          },
+        ),
       ),
     );
   }

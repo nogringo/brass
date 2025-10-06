@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 class VideoCommentsSection extends StatelessWidget {
   final VoidCallback onSendComment;
 
-  const VideoCommentsSection({
-    super.key,
-    required this.onSendComment,
-  });
+  const VideoCommentsSection({super.key, required this.onSendComment});
 
   @override
   Widget build(BuildContext context) {
@@ -15,10 +12,7 @@ class VideoCommentsSection extends StatelessWidget {
       children: [
         const Text(
           'Comments',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
 
@@ -26,9 +20,7 @@ class VideoCommentsSection extends StatelessWidget {
         TextField(
           decoration: InputDecoration(
             hintText: 'Add a comment...',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(24),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(24)),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 12,

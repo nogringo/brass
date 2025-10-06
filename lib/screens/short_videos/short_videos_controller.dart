@@ -223,7 +223,9 @@ class ShortVideosController extends GetxController {
     if (isLiked.value) {
       // Remove like (would need to delete the reaction event)
       isLiked.value = false;
-      likesCount.value = (likesCount.value - 1).clamp(0, double.infinity).toInt();
+      likesCount.value = (likesCount.value - 1)
+          .clamp(0, double.infinity)
+          .toInt();
     } else {
       // Send like reaction to Nostr
       try {
@@ -239,7 +241,9 @@ class ShortVideosController extends GetxController {
         ndk.broadcast.broadcast(nostrEvent: event);
         isLiked.value = true;
         if (isDisliked.value) {
-          dislikesCount.value = (dislikesCount.value - 1).clamp(0, double.infinity).toInt();
+          dislikesCount.value = (dislikesCount.value - 1)
+              .clamp(0, double.infinity)
+              .toInt();
         }
         isDisliked.value = false;
         likesCount.value++;
@@ -265,7 +269,9 @@ class ShortVideosController extends GetxController {
     if (isDisliked.value) {
       // Remove dislike (would need to delete the reaction event)
       isDisliked.value = false;
-      dislikesCount.value = (dislikesCount.value - 1).clamp(0, double.infinity).toInt();
+      dislikesCount.value = (dislikesCount.value - 1)
+          .clamp(0, double.infinity)
+          .toInt();
     } else {
       // Send dislike reaction to Nostr
       try {
@@ -281,7 +287,9 @@ class ShortVideosController extends GetxController {
         ndk.broadcast.broadcast(nostrEvent: event);
         isDisliked.value = true;
         if (isLiked.value) {
-          likesCount.value = (likesCount.value - 1).clamp(0, double.infinity).toInt();
+          likesCount.value = (likesCount.value - 1)
+              .clamp(0, double.infinity)
+              .toInt();
         }
         isLiked.value = false;
         dislikesCount.value++;

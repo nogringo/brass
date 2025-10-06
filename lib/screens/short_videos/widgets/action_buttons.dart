@@ -25,10 +25,7 @@ class ActionButtons extends StatelessWidget {
         Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.bolt),
-            ),
+            IconButton(onPressed: () {}, icon: const Icon(Icons.bolt)),
             Obx(
               () => Text(
                 _formatCount(controller.zapsCount.value),

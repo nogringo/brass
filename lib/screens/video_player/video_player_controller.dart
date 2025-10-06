@@ -5,6 +5,7 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:ndk/entities.dart';
 import 'package:ndk/ndk.dart';
+import 'package:toastification/toastification.dart';
 import '../../models/nostr_video.dart';
 import '../../repository.dart';
 import '../login_screen.dart';
@@ -25,6 +26,8 @@ class VideoPlayerController extends GetxController {
   // Interaction states
   final isLiked = false.obs;
   final isDisliked = false.obs;
+  final isFollowing = false.obs;
+  final isLoadingFollow = false.obs;
 
   // Counts
   final likesCount = 0.obs;
@@ -50,6 +53,7 @@ class VideoPlayerController extends GetxController {
     // Load metadata and reactions
     _loadAuthorMetadata();
     _loadReactionCounts();
+    _checkIfFollowing();
 
     update();
   }
@@ -70,8 +74,9 @@ class VideoPlayerController extends GetxController {
     } else {
       try {
         final ndk = Repository.ndk;
-        final loadedMetadata =
-            await ndk.metadata.loadMetadata(currentVideo!.authorPubkey);
+        final loadedMetadata = await ndk.metadata.loadMetadata(
+          currentVideo!.authorPubkey,
+        );
         _repository.usersMetadata[currentVideo!.authorPubkey] = loadedMetadata;
         authorMetadata = loadedMetadata;
         update();
@@ -87,8 +92,7 @@ class VideoPlayerController extends GetxController {
     if (currentVideo == null) return;
 
     try {
-      final reactions =
-          await _repository.fetchVideoReactions(currentVideo!.id);
+      final reactions = await _repository.fetchVideoReactions(currentVideo!.id);
       likesCount.value = reactions['likes'] ?? 0;
       dislikesCount.value = reactions['dislikes'] ?? 0;
       zapsCount.value = reactions['zaps'] ?? 0;
@@ -96,6 +100,92 @@ class VideoPlayerController extends GetxController {
       if (kDebugMode) {
         print('Error loading reactions: $e');
       }
+    }
+  }
+
+  Future<void> _checkIfFollowing() async {
+    if (currentVideo == null) return;
+
+    final ndk = Repository.ndk;
+    final myPubkey = ndk.accounts.getPublicKey();
+
+    if (myPubkey == null) {
+      isFollowing.value = false;
+      return;
+    }
+
+    try {
+      final contactList = await ndk.follows.getContactList(myPubkey);
+      isFollowing.value =
+          contactList?.contacts.contains(currentVideo!.authorPubkey) ?? false;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error checking follow status: $e');
+      }
+    }
+  }
+
+  Future<void> toggleFollow(BuildContext context) async {
+    if (currentVideo == null) return;
+
+    final ndk = Repository.ndk;
+    final myPubkey = ndk.accounts.getPublicKey();
+
+    if (myPubkey == null) {
+      Get.to(() => const LoginScreen());
+      return;
+    }
+
+    // Don't allow following yourself
+    if (myPubkey == currentVideo!.authorPubkey) {
+      toastification.show(
+        context: context,
+        type: ToastificationType.info,
+        title: const Text('You cannot follow yourself'),
+        alignment: Alignment.bottomRight,
+        autoCloseDuration: const Duration(seconds: 2),
+      );
+      return;
+    }
+
+    isLoadingFollow.value = true;
+
+    try {
+      if (isFollowing.value) {
+        await ndk.follows.broadcastRemoveContact(currentVideo!.authorPubkey);
+        isFollowing.value = false;
+        toastification.show(
+          context: context,
+          type: ToastificationType.success,
+          title: const Text('Unfollowed'),
+          alignment: Alignment.bottomRight,
+          autoCloseDuration: const Duration(seconds: 2),
+        );
+      } else {
+        await ndk.follows.broadcastAddContact(currentVideo!.authorPubkey);
+        isFollowing.value = true;
+        toastification.show(
+          context: context,
+          type: ToastificationType.success,
+          title: const Text('Following'),
+          alignment: Alignment.bottomRight,
+          autoCloseDuration: const Duration(seconds: 2),
+        );
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error toggling follow: $e');
+      }
+      toastification.show(
+        context: context,
+        type: ToastificationType.error,
+        title: const Text('Failed to update follow status'),
+        description: Text(e.toString()),
+        alignment: Alignment.bottomRight,
+        autoCloseDuration: const Duration(seconds: 3),
+      );
+    } finally {
+      isLoadingFollow.value = false;
     }
   }
 
@@ -128,12 +218,15 @@ class VideoPlayerController extends GetxController {
 
     if (isLiked.value) {
       isLiked.value = false;
-      likesCount.value = (likesCount.value - 1).clamp(0, double.infinity).toInt();
+      likesCount.value = (likesCount.value - 1)
+          .clamp(0, double.infinity)
+          .toInt();
     } else {
       isLiked.value = true;
       if (isDisliked.value) {
-        dislikesCount.value =
-            (dislikesCount.value - 1).clamp(0, double.infinity).toInt();
+        dislikesCount.value = (dislikesCount.value - 1)
+            .clamp(0, double.infinity)
+            .toInt();
       }
       isDisliked.value = false;
       likesCount.value++;
@@ -171,13 +264,15 @@ class VideoPlayerController extends GetxController {
 
     if (isDisliked.value) {
       isDisliked.value = false;
-      dislikesCount.value =
-          (dislikesCount.value - 1).clamp(0, double.infinity).toInt();
+      dislikesCount.value = (dislikesCount.value - 1)
+          .clamp(0, double.infinity)
+          .toInt();
     } else {
       isDisliked.value = true;
       if (isLiked.value) {
-        likesCount.value =
-            (likesCount.value - 1).clamp(0, double.infinity).toInt();
+        likesCount.value = (likesCount.value - 1)
+            .clamp(0, double.infinity)
+            .toInt();
       }
       isLiked.value = false;
       dislikesCount.value++;

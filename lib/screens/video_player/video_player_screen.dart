@@ -1,10 +1,12 @@
 import 'package:brass/models/nostr_video.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:ndk/entities.dart';
 import 'package:ndk/ndk.dart';
+import 'package:toastification/toastification.dart';
 import '../../repository.dart';
 import '../channel_screen.dart';
 import '../login_screen.dart';
@@ -31,6 +33,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   // Interaction states
   bool _isLiked = false;
   bool _isDisliked = false;
+  bool _isFollowing = false;
+  bool _isLoadingFollow = false;
 
   // Counts
   int _likesCount = 0;
@@ -51,6 +55,105 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
     // Load reaction counts
     _loadReactionCounts();
+
+    // Check if following
+    _checkIfFollowing();
+  }
+
+  Future<void> _checkIfFollowing() async {
+    final ndk = Repository.ndk;
+    final myPubkey = ndk.accounts.getPublicKey();
+
+    if (myPubkey == null) {
+      setState(() {
+        _isFollowing = false;
+      });
+      return;
+    }
+
+    try {
+      final contactList = await ndk.follows.getContactList(myPubkey);
+      setState(() {
+        _isFollowing =
+            contactList?.contacts.contains(widget.video.authorPubkey) ?? false;
+      });
+    } catch (e) {
+      // Failed to check following status
+    }
+  }
+
+  Future<void> _toggleFollow() async {
+    final ndk = Repository.ndk;
+    final myPubkey = ndk.accounts.getPublicKey();
+
+    if (myPubkey == null) {
+      Get.to(() => const LoginScreen());
+      return;
+    }
+
+    // Don't allow following yourself
+    if (myPubkey == widget.video.authorPubkey) {
+      toastification.show(
+        context: context,
+        type: ToastificationType.info,
+        title: const Text('You cannot follow yourself'),
+        alignment: Alignment.bottomRight,
+        autoCloseDuration: const Duration(seconds: 2),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoadingFollow = true;
+    });
+
+    try {
+      if (_isFollowing) {
+        await ndk.follows.broadcastRemoveContact(widget.video.authorPubkey);
+        setState(() {
+          _isFollowing = false;
+          _isLoadingFollow = false;
+        });
+        if (mounted) {
+          toastification.show(
+            context: context,
+            type: ToastificationType.success,
+            title: const Text('Unfollowed'),
+            alignment: Alignment.bottomRight,
+            autoCloseDuration: const Duration(seconds: 2),
+          );
+        }
+      } else {
+        await ndk.follows.broadcastAddContact(widget.video.authorPubkey);
+        setState(() {
+          _isFollowing = true;
+          _isLoadingFollow = false;
+        });
+        if (mounted) {
+          toastification.show(
+            context: context,
+            type: ToastificationType.success,
+            title: const Text('Following'),
+            alignment: Alignment.bottomRight,
+            autoCloseDuration: const Duration(seconds: 2),
+          );
+        }
+      }
+    } catch (e) {
+      setState(() {
+        _isLoadingFollow = false;
+      });
+      if (mounted) {
+        toastification.show(
+          context: context,
+          type: ToastificationType.error,
+          title: const Text('Failed to update follow status'),
+          description: Text(e.toString()),
+          alignment: Alignment.bottomRight,
+          autoCloseDuration: const Duration(seconds: 3),
+        );
+      }
+    }
   }
 
   Future<void> _loadReactionCounts() async {
@@ -75,7 +178,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     } else {
       try {
         final ndk = Repository.ndk;
-        final loadedMetadata = await ndk.metadata.loadMetadata(widget.video.authorPubkey);
+        final loadedMetadata = await ndk.metadata.loadMetadata(
+          widget.video.authorPubkey,
+        );
         _repository.usersMetadata[widget.video.authorPubkey] = loadedMetadata;
         setState(() {
           _authorMetadata = loadedMetadata;
@@ -142,7 +247,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       } else {
         _isLiked = true;
         if (_isDisliked) {
-          _dislikesCount = (_dislikesCount - 1).clamp(0, double.infinity).toInt();
+          _dislikesCount = (_dislikesCount - 1)
+              .clamp(0, double.infinity)
+              .toInt();
         }
         _isDisliked = false;
         _likesCount++;
@@ -211,7 +318,67 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   }
 
   void _onShareTap() {
-    // TODO: Implement share functionality
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Share Video', style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(Icons.link),
+              title: const Text('Video URL'),
+              subtitle: Text(
+                widget.video.videoUrl,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: IconButton(
+                icon: const Icon(Icons.copy),
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: widget.video.videoUrl));
+                  toastification.show(
+                    context: context,
+                    type: ToastificationType.success,
+                    title: const Text('Video URL copied to clipboard'),
+                    alignment: Alignment.bottomRight,
+                    autoCloseDuration: const Duration(seconds: 2),
+                  );
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.event),
+              title: const Text('Event ID'),
+              subtitle: Text(
+                widget.video.id,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: IconButton(
+                icon: const Icon(Icons.copy),
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: widget.video.id));
+                  toastification.show(
+                    context: context,
+                    type: ToastificationType.success,
+                    title: const Text('Event ID copied to clipboard'),
+                    alignment: Alignment.bottomRight,
+                    autoCloseDuration: const Duration(seconds: 2),
+                  );
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -226,9 +393,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           children: [
             // Video Player
             ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: maxVideoHeight,
-              ),
+              constraints: BoxConstraints(maxHeight: maxVideoHeight),
               child: AspectRatio(
                 aspectRatio: 16 / 9,
                 child: Video(
@@ -294,6 +459,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                         ),
                       );
                     },
+                    onFollowTap: _toggleFollow,
+                    isFollowing: _isFollowing,
+                    isLoadingFollow: _isLoadingFollow,
                   ),
 
                   if (widget.video.description.isNotEmpty) ...[

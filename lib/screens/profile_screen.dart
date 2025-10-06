@@ -103,7 +103,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           context: context,
           type: ToastificationType.success,
           title: const Text('Wallet Connected'),
-          description: Text('Connected to ${connection.info?.alias ?? "wallet"}'),
+          description: Text(
+            'Connected to ${connection.info?.alias ?? "wallet"}',
+          ),
           alignment: Alignment.bottomRight,
           autoCloseDuration: const Duration(seconds: 3),
         );
@@ -137,6 +139,57 @@ class _ProfileScreenState extends State<ProfileScreen> {
       title: const Text('Wallet Disconnected'),
       alignment: Alignment.bottomRight,
       autoCloseDuration: const Duration(seconds: 2),
+    );
+  }
+
+  void _copyToClipboard(String text, String label) {
+    Clipboard.setData(ClipboardData(text: text));
+    toastification.show(
+      context: context,
+      type: ToastificationType.success,
+      title: Text('$label copied to clipboard'),
+      alignment: Alignment.bottomRight,
+      autoCloseDuration: const Duration(seconds: 2),
+    );
+  }
+
+  void _shareProfile() {
+    final pubkey = ndk.accounts.getPublicKey();
+    if (pubkey == null) return;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Share Profile',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(Icons.key),
+              title: const Text('Public Key (hex)'),
+              subtitle: Text(
+                pubkey,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: IconButton(
+                icon: const Icon(Icons.copy),
+                onPressed: () {
+                  _copyToClipboard(pubkey, 'Public key');
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
     );
   }
 
@@ -192,13 +245,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   const SizedBox(height: 16),
-                  Text(
-                    isLoggedIn
-                        ? (userMetadata?.name ??
-                            userMetadata?.displayName ??
-                            'Nostr User')
-                        : 'Guest User',
-                    style: Theme.of(context).textTheme.headlineSmall,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        isLoggedIn
+                            ? (userMetadata?.name ??
+                                  userMetadata?.displayName ??
+                                  'Nostr User')
+                            : 'Guest User',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      if (isLoggedIn) ...[
+                        const SizedBox(width: 8),
+                        IconButton(
+                          icon: const Icon(Icons.share),
+                          onPressed: _shareProfile,
+                          tooltip: 'Share profile',
+                        ),
+                      ],
+                    ],
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -253,8 +319,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       subtitle: isConnectingWallet
                           ? const Text('Connecting...')
                           : nwcConnection != null
-                              ? const Text('Connected')
-                              : null,
+                          ? const Text('Connected')
+                          : null,
                       trailing: isConnectingWallet
                           ? const SizedBox(
                               width: 20,
@@ -262,25 +328,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : nwcConnection != null
-                              ? IconButton(
-                                  icon: const Icon(Icons.close),
-                                  onPressed: _disconnectWallet,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant,
-                                )
-                              : Icon(
-                                  Icons.chevron_right,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant,
-                                ),
+                          ? IconButton(
+                              icon: const Icon(Icons.close),
+                              onPressed: _disconnectWallet,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            )
+                          : Icon(
+                              Icons.chevron_right,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
                       onTap: nwcConnection == null && !isConnectingWallet
                           ? _connectWallet
                           : null,
                     ),
                     Divider(
-                        color: Theme.of(context).colorScheme.outlineVariant),
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                    ),
                   ],
                   ListTile(
                     leading: Icon(
