@@ -46,6 +46,33 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
           ),
           const SizedBox(height: 16),
 
+          // Title field
+          Text('Title', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: widget.titleController,
+            decoration: const InputDecoration(hintText: 'Enter video title'),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Title is required';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+
+          // Description field
+          Text('Description', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: widget.descriptionController,
+            decoration: const InputDecoration(
+              hintText: 'Enter video description',
+            ),
+            maxLines: 4,
+          ),
+          const SizedBox(height: 16),
+
           // Thumbnail section
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,7 +81,7 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Thumbnail (optional)',
+                    'Thumbnail',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   FilledButton.icon(
@@ -99,45 +126,6 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
               const SizedBox(height: 16),
             ],
           ),
-
-          // Title field
-          Text('Title', style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: widget.titleController,
-            decoration: const InputDecoration(hintText: 'Enter video title'),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Title is required';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
-
-          // Description field
-          Text('Description', style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: widget.descriptionController,
-            decoration: const InputDecoration(
-              hintText: 'Enter video description',
-            ),
-            maxLines: 4,
-          ),
-          const SizedBox(height: 16),
-
-          // Duration field
-          Text('Duration (optional)', style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: widget.durationController,
-            decoration: const InputDecoration(
-              hintText: 'Duration in seconds (e.g., 120)',
-            ),
-            keyboardType: TextInputType.number,
-          ),
-          const SizedBox(height: 16),
 
           // Video type selector
           Row(
