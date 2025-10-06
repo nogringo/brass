@@ -151,6 +151,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   // Author info
                   InkWell(
                     onTap: () {
+                      _player.pause();
                       Navigator.push(
                         context,
                         MaterialPageRoute(
