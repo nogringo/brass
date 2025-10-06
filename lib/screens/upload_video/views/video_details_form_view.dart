@@ -34,7 +34,6 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
   @override
   Widget build(BuildContext context) {
     final controller = UploadVideoController.to;
-    final isYouTube = controller.isYouTubeUrl.value;
 
     return Form(
       key: widget.formKey,
@@ -47,8 +46,8 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
           ),
           const SizedBox(height: 16),
 
-          // Thumbnail preview for YouTube videos
-          if (isYouTube && widget.thumbnailUrlController.text.isNotEmpty)
+          // Thumbnail preview
+          if (widget.thumbnailUrlController.text.isNotEmpty)
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -125,29 +124,17 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
           ),
           const SizedBox(height: 16),
 
-          if (!isYouTube) ...[
-            // Thumbnail URL field
-            TextFormField(
-              controller: widget.thumbnailUrlController,
-              decoration: const InputDecoration(
-                labelText: 'Thumbnail URL (optional)',
-                hintText: 'https://example.com/thumbnail.jpg',
-              ),
+          // Duration field
+          Text('Duration (optional)', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: widget.durationController,
+            decoration: const InputDecoration(
+              hintText: 'Duration in seconds (e.g., 120)',
             ),
-            const SizedBox(height: 16),
-
-            // Duration field
-            TextFormField(
-              controller: widget.durationController,
-              decoration: const InputDecoration(
-                labelText: 'Duration in seconds (optional)',
-                hintText: '120',
-                border: OutlineInputBorder(),
-              ),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 16),
-          ],
+            keyboardType: TextInputType.number,
+          ),
+          const SizedBox(height: 16),
 
           // Video type selector
           Row(

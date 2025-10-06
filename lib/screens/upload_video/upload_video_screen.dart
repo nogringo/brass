@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ndk/ndk.dart';
@@ -50,31 +49,8 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
       String? videoUrl;
       String? thumbnailUrl = controller.thumbnailUrlController.text.trim();
 
-      // Check if this is a YouTube import (downloaded video)
-      if (controller.downloadedVideoPath != null) {
-        // Upload downloaded YouTube video to Blossom
-        final videoFile = File(controller.downloadedVideoPath!);
-        final videoBytes = await videoFile.readAsBytes();
-        final uploadResults = await ndk.blossom.uploadBlob(
-          data: videoBytes,
-          contentType: 'video/mp4',
-          serverMediaOptimisation: true,
-        );
-
-        if (uploadResults.isNotEmpty) {
-          videoUrl = uploadResults.first.toString();
-        } else {
-          throw Exception('Failed to upload YouTube video');
-        }
-
-        // Upload downloaded thumbnail
-        if (controller.downloadedThumbnailPath != null) {
-          thumbnailUrl = await controller.uploadThumbnailToBlossom(
-            controller.downloadedThumbnailPath!,
-          );
-        }
-      } else if (controller.selectedFile.value != null) {
-        // Upload local video file to Blossom
+      // Upload local video file to Blossom
+      if (controller.selectedFile.value != null) {
         videoUrl = await controller.uploadVideoToBlossom();
         if (videoUrl == null) {
           throw Exception('Failed to upload video file');
@@ -89,7 +65,7 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
           );
         }
       } else {
-        throw Exception('No video selected or URL provided');
+        throw Exception('No video file selected');
       }
 
       if (videoUrl.isEmpty) {
