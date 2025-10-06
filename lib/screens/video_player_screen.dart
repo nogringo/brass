@@ -2,6 +2,8 @@ import 'package:brass/models/nostr_video.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:ndk/entities.dart';
+import '../repository.dart';
 import 'channel_screen.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
@@ -16,6 +18,8 @@ class VideoPlayerScreen extends StatefulWidget {
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   late final Player _player;
   late final VideoController _controller;
+  final Repository _repository = Repository.to;
+  Metadata? _authorMetadata;
 
   @override
   void initState() {
@@ -25,6 +29,29 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
     // Load the video
     _player.open(Media(widget.video.videoUrl));
+
+    // Load author metadata
+    _loadAuthorMetadata();
+  }
+
+  Future<void> _loadAuthorMetadata() async {
+    final metadata = _repository.usersMetadata[widget.video.authorPubkey];
+    if (metadata != null) {
+      setState(() {
+        _authorMetadata = metadata;
+      });
+    } else {
+      try {
+        final ndk = Repository.ndk;
+        final loadedMetadata = await ndk.metadata.loadMetadata(widget.video.authorPubkey);
+        _repository.usersMetadata[widget.video.authorPubkey] = loadedMetadata;
+        setState(() {
+          _authorMetadata = loadedMetadata;
+        });
+      } catch (e) {
+        // Failed to load metadata
+      }
+    }
   }
 
   @override
@@ -110,22 +137,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                             ),
                           ],
                         ),
-                      if (widget.video.dimension != null)
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.aspect_ratio, size: 16),
-                            const SizedBox(width: 4),
-                            Text(
-                              widget.video.dimension!,
-                              style: TextStyle(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -166,41 +177,32 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                       child: Row(
                         children: [
                           CircleAvatar(
+                            radius: 20,
                             backgroundColor: Theme.of(
                               context,
                             ).colorScheme.surfaceContainerHighest,
-                            child: Icon(
-                              Icons.person,
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Published by',
-                                  style: TextStyle(
-                                    fontSize: 12,
+                            backgroundImage: _authorMetadata?.picture?.isNotEmpty == true
+                                ? NetworkImage(_authorMetadata!.picture!)
+                                : null,
+                            child: _authorMetadata?.picture?.isNotEmpty == true
+                                ? null
+                                : Icon(
+                                    Icons.person,
                                     color: Theme.of(
                                       context,
                                     ).colorScheme.onSurfaceVariant,
                                   ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  widget.video.authorPubkey,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              _authorMetadata?.name ?? _authorMetadata?.displayName ?? 'Unknown',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           Icon(
