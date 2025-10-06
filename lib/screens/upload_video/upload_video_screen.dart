@@ -4,6 +4,8 @@ import 'package:ndk/ndk.dart';
 import 'package:toastification/toastification.dart';
 import '../../repository.dart';
 import '../login_screen.dart';
+import 'upload_video_controller.dart';
+import 'views/import_video_view.dart';
 
 class UploadVideoScreen extends StatefulWidget {
   const UploadVideoScreen({super.key});
@@ -87,15 +89,19 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
   }
 
   Future<void> _selectFile() async {
-    // TODO: Implement file picker
-    toastification.show(
-      context: context,
-      type: ToastificationType.info,
-      title: const Text('File selection coming soon'),
-      description: const Text('This feature will allow you to select and upload video files from your device'),
-      alignment: Alignment.bottomRight,
-      autoCloseDuration: const Duration(seconds: 3),
-    );
+    final controller = UploadVideoController.to;
+    await controller.selectFile();
+
+    if (mounted && controller.selectedFile.value != null) {
+      toastification.show(
+        context: context,
+        type: ToastificationType.success,
+        title: const Text('File selected'),
+        description: Text('Selected: ${controller.selectedFile.value!.name}'),
+        alignment: Alignment.bottomRight,
+        autoCloseDuration: const Duration(seconds: 3),
+      );
+    }
   }
 
   void _showVideoDetailsForm({required bool isYouTube}) {
@@ -341,42 +347,10 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
         child: SingleChildScrollView(
           child: Center(
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 450),
+              constraints: const BoxConstraints(maxWidth: 500),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    TextField(
-                      controller: _videoUrlController,
-                      decoration: InputDecoration(
-                        labelText: "Youtube link",
-                        hintText: "https://youtube.com/watch?v=...",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    FilledButton(
-                      onPressed: _isYouTubeUrl && !_isUploading
-                          ? _importFromYouTube
-                          : null,
-                      style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                      ),
-                      child: const Text("Import from Youtube"),
-                    ),
-                    const SizedBox(height: 8),
-                    FilledButton(
-                      onPressed: !_isUploading ? _selectFile : null,
-                      style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                      ),
-                      child: const Text("Select file"),
-                    ),
-                  ],
-                ),
+                child: ImportVideoView(),
               ),
             ),
           ),
