@@ -41,6 +41,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   int _dislikesCount = 0;
   int _zapsCount = 0;
 
+  // Comments
+  List<Nip01Event> _comments = [];
+  final Map<String, Metadata?> _commentsMetadata = {};
+
   @override
   void initState() {
     super.initState();
@@ -58,6 +62,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
     // Check if following
     _checkIfFollowing();
+
+    // Load comments
+    _loadComments();
   }
 
   Future<void> _checkIfFollowing() async {
@@ -148,6 +155,97 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           context: context,
           type: ToastificationType.error,
           title: const Text('Failed to update follow status'),
+          description: Text(e.toString()),
+          alignment: Alignment.bottomRight,
+          autoCloseDuration: const Duration(seconds: 3),
+        );
+      }
+    }
+  }
+
+  Future<void> _loadComments() async {
+    final ndk = Repository.ndk;
+
+    try {
+      final commentsResponse = ndk.requests.query(
+        filters: [
+          Filter(
+            kinds: [1], // kind 1 = text notes (comments)
+            eTags: [widget.video.id],
+          ),
+        ],
+      );
+
+      await for (final event in commentsResponse.stream) {
+        // Load metadata for comment author if not already loaded
+        if (!_commentsMetadata.containsKey(event.pubKey)) {
+          try {
+            final metadata = await ndk.metadata.loadMetadata(event.pubKey);
+            _commentsMetadata[event.pubKey] = metadata;
+          } catch (e) {
+            _commentsMetadata[event.pubKey] = null;
+          }
+        }
+
+        setState(() {
+          if (!_comments.any((c) => c.id == event.id)) {
+            _comments.add(event);
+            // Sort by newest first
+            _comments.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          }
+        });
+      }
+    } catch (e) {
+      // Failed to load comments
+    }
+  }
+
+  Future<void> _sendComment(String comment) async {
+    final ndk = Repository.ndk;
+    final pubkey = ndk.accounts.getPublicKey();
+
+    if (pubkey == null) {
+      Get.to(() => const LoginScreen());
+      return;
+    }
+
+    try {
+      final event = Nip01Event(
+        pubKey: pubkey,
+        kind: 1, // kind 1 = text note/comment
+        content: comment,
+        tags: [
+          ['e', widget.video.id],
+          ['p', widget.video.authorPubkey],
+        ],
+      );
+
+      ndk.broadcast.broadcast(nostrEvent: event);
+
+      // Add the comment locally so it appears immediately
+      setState(() {
+        _comments.insert(0, event);
+        final myPubkey = ndk.accounts.getPublicKey();
+        if (myPubkey != null && !_commentsMetadata.containsKey(myPubkey)) {
+          _commentsMetadata[myPubkey] = _repository.usersMetadata[myPubkey];
+        }
+      });
+
+      if (mounted) {
+        toastification.show(
+          context: context,
+          type: ToastificationType.success,
+          title: const Text('Comment posted'),
+          alignment: Alignment.bottomRight,
+          autoCloseDuration: const Duration(seconds: 2),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        toastification.show(
+          context: context,
+          type: ToastificationType.error,
+          title: const Text('Failed to post comment'),
           description: Text(e.toString()),
           alignment: Alignment.bottomRight,
           autoCloseDuration: const Duration(seconds: 3),
@@ -490,9 +588,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   const SizedBox(height: 16),
 
                   VideoCommentsSection(
-                    onSendComment: () {
-                      // TODO: Implement send comment
-                    },
+                    onSendComment: _sendComment,
+                    comments: _comments,
+                    commentsMetadata: _commentsMetadata,
                   ),
                 ],
               ),
