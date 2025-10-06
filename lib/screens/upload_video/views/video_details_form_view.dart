@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:file_picker/file_picker.dart';
 import '../upload_video_controller.dart';
 
 class VideoDetailsFormView extends StatefulWidget {
@@ -50,28 +52,45 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Thumbnail',
-                  style: Theme.of(context).textTheme.titleMedium,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Thumbnail',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    TextButton.icon(
+                      onPressed: () async {
+                        try {
+                          final result = await FilePicker.platform.pickFiles(
+                            type: FileType.image,
+                            allowMultiple: false,
+                          );
+
+                          if (result != null && result.files.isNotEmpty) {
+                            final file = result.files.first;
+                            if (file.path != null) {
+                              widget.thumbnailUrlController.text = file.path!;
+                              setState(() {});
+                            }
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Failed to select image: $e')),
+                            );
+                          }
+                        }
+                      },
+                      icon: const Icon(Icons.edit, size: 18),
+                      label: const Text('Change'),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 8),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    widget.thumbnailUrlController.text,
-                    height: 200,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        height: 200,
-                        color: Colors.grey[300],
-                        child: const Center(
-                          child: Icon(Icons.broken_image, size: 50),
-                        ),
-                      );
-                    },
-                  ),
+                  child: _buildThumbnailImage(),
                 ),
                 const SizedBox(height: 16),
               ],
@@ -166,5 +185,47 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
         ],
       ),
     );
+  }
+
+  Widget _buildThumbnailImage() {
+    final thumbnailUrl = widget.thumbnailUrlController.text;
+
+    // Check if it's a local file path or URL
+    final isLocalFile = !thumbnailUrl.startsWith('http://') &&
+                       !thumbnailUrl.startsWith('https://');
+
+    if (isLocalFile) {
+      return Image.file(
+        File(thumbnailUrl),
+        height: 200,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            height: 200,
+            color: Colors.grey[300],
+            child: const Center(
+              child: Icon(Icons.broken_image, size: 50),
+            ),
+          );
+        },
+      );
+    } else {
+      return Image.network(
+        thumbnailUrl,
+        height: 200,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            height: 200,
+            color: Colors.grey[300],
+            child: const Center(
+              child: Icon(Icons.broken_image, size: 50),
+            ),
+          );
+        },
+      );
+    }
   }
 }
