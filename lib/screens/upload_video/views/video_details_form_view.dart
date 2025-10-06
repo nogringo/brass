@@ -46,59 +46,62 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
           ),
           const SizedBox(height: 16),
 
-          // Thumbnail preview
-          if (widget.thumbnailUrlController.text.isNotEmpty)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Thumbnail',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    TextButton.icon(
-                      onPressed: () async {
-                        try {
-                          final result = await FilePicker.platform.pickFiles(
-                            type: FileType.image,
-                            allowMultiple: false,
-                          );
+          // Thumbnail section
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Thumbnail (optional)',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  FilledButton.icon(
+                    onPressed: () async {
+                      try {
+                        final result = await FilePicker.platform.pickFiles(
+                          type: FileType.image,
+                          allowMultiple: false,
+                        );
 
-                          if (result != null && result.files.isNotEmpty) {
-                            final file = result.files.first;
-                            if (file.path != null) {
-                              widget.thumbnailUrlController.text = file.path!;
-                              setState(() {});
-                            }
-                          }
-                        } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Failed to select image: $e'),
-                              ),
-                            );
+                        if (result != null && result.files.isNotEmpty) {
+                          final file = result.files.first;
+                          if (file.path != null) {
+                            widget.thumbnailUrlController.text = file.path!;
+                            setState(() {});
                           }
                         }
-                      },
-                      icon: const Icon(Icons.edit, size: 18),
-                      label: const Text('Change'),
-                    ),
-                  ],
-                ),
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Failed to select image: $e'),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    icon: const Icon(Icons.image, size: 18),
+                    label: Text(widget.thumbnailUrlController.text.isEmpty
+                        ? 'Select Thumbnail'
+                        : 'Change Thumbnail'),
+                  ),
+                ],
+              ),
+              if (widget.thumbnailUrlController.text.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: _buildThumbnailImage(),
                 ),
-                const SizedBox(height: 16),
               ],
-            ),
+              const SizedBox(height: 16),
+            ],
+          ),
 
           // Title field
-          Text('Title *', style: Theme.of(context).textTheme.titleMedium),
+          Text('Title', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           TextFormField(
             controller: widget.titleController,

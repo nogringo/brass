@@ -38,6 +38,13 @@ class UploadVideoController extends GetxController {
 
       if (result != null && result.files.isNotEmpty) {
         selectedFile.value = result.files.first;
+
+        // Prefill title from file name (without extension)
+        final fileName = result.files.first.name;
+        final titleWithoutExtension = fileName.contains('.')
+            ? fileName.substring(0, fileName.lastIndexOf('.'))
+            : fileName;
+        titleController.text = titleWithoutExtension;
       }
     } catch (e) {
       if (Get.context != null) {

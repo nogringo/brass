@@ -23,9 +23,6 @@ class ImportVideoView extends StatelessWidget {
                     }
                   }
                 : null,
-            style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-            ),
             child: const Text("Select Video File"),
           ),
         ),
