@@ -13,13 +13,19 @@ class ActionButtons extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
+          onPressed: () {},
+          icon: Icon(Icons.bolt),
+        ),
+        IconButton(
           onPressed: controller.onLikeTap,
           icon: Obx(
             () => Icon(
               controller.isLiked.value
                   ? Icons.thumb_up
                   : Icons.thumb_up_outlined,
-              color: controller.isLiked.value ? Colors.blue : Colors.white,
+              color: controller.isLiked.value
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),
@@ -30,7 +36,9 @@ class ActionButtons extends StatelessWidget {
               controller.isDisliked.value
                   ? Icons.thumb_down
                   : Icons.thumb_down_outlined,
-              color: controller.isDisliked.value ? Colors.red : Colors.white,
+              color: controller.isDisliked.value
+                  ? Theme.of(context).colorScheme.error
+                  : Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),
