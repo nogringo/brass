@@ -80,4 +80,70 @@ class Repository extends GetxController {
       ...shortsVideos,
     ].where((video) => video.authorPubkey == pubkey).toList();
   }
+
+  Future<Map<String, int>> fetchVideoReactions(String videoId) async {
+    int likes = 0;
+    int dislikes = 0;
+    int zaps = 0;
+    int comments = 0;
+
+    try {
+      // Fetch reactions (kind 7) for this video
+      final reactionsResponse = ndk.requests.query(
+        filters: [
+          Filter(
+            kinds: [7], // kind 7 = reactions
+            eTags: [videoId],
+          ),
+        ],
+      );
+
+      await for (final event in reactionsResponse.stream) {
+        if (event.content == '+') {
+          likes++;
+        } else if (event.content == '-') {
+          dislikes++;
+        }
+      }
+
+      // Fetch zaps (kind 9735) for this video
+      final zapsResponse = ndk.requests.query(
+        filters: [
+          Filter(
+            kinds: [9735], // kind 9735 = zap receipts
+            eTags: [videoId],
+          ),
+        ],
+      );
+
+      await for (final _ in zapsResponse.stream) {
+        zaps++;
+      }
+
+      // Fetch comments (kind 1) for this video
+      final commentsResponse = ndk.requests.query(
+        filters: [
+          Filter(
+            kinds: [1], // kind 1 = text notes (comments)
+            eTags: [videoId],
+          ),
+        ],
+      );
+
+      await for (final _ in commentsResponse.stream) {
+        comments++;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching video reactions: $e');
+      }
+    }
+
+    return {
+      'likes': likes,
+      'dislikes': dislikes,
+      'zaps': zaps,
+      'comments': comments,
+    };
+  }
 }

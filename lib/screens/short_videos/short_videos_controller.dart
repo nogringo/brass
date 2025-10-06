@@ -58,8 +58,10 @@ class ShortVideosController extends GetxController {
   final isSubscribed = false.obs;
 
   // Counts
-  String get likeCount => '502K';
-  String get commentCount => '3,781';
+  final likesCount = 0.obs;
+  final dislikesCount = 0.obs;
+  final zapsCount = 0.obs;
+  final commentsCount = 0.obs;
 
   @override
   void onInit() {
@@ -146,7 +148,26 @@ class ShortVideosController extends GetxController {
     // Preload next video
     _preloadNextVideo();
 
+    // Load reaction counts
+    _loadReactionCounts();
+
     update();
+  }
+
+  Future<void> _loadReactionCounts() async {
+    if (currentVideo == null) return;
+
+    try {
+      final reactions = await _repository.fetchVideoReactions(currentVideo!.id);
+      likesCount.value = reactions['likes'] ?? 0;
+      dislikesCount.value = reactions['dislikes'] ?? 0;
+      zapsCount.value = reactions['zaps'] ?? 0;
+      commentsCount.value = reactions['comments'] ?? 0;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error loading reaction counts: $e');
+      }
+    }
   }
 
   void _preloadNextVideo() {
@@ -202,6 +223,7 @@ class ShortVideosController extends GetxController {
     if (isLiked.value) {
       // Remove like (would need to delete the reaction event)
       isLiked.value = false;
+      likesCount.value = (likesCount.value - 1).clamp(0, double.infinity).toInt();
     } else {
       // Send like reaction to Nostr
       try {
@@ -216,7 +238,11 @@ class ShortVideosController extends GetxController {
         );
         ndk.broadcast.broadcast(nostrEvent: event);
         isLiked.value = true;
+        if (isDisliked.value) {
+          dislikesCount.value = (dislikesCount.value - 1).clamp(0, double.infinity).toInt();
+        }
         isDisliked.value = false;
+        likesCount.value++;
       } catch (e) {
         if (kDebugMode) {
           print('Error sending like: $e');
@@ -239,6 +265,7 @@ class ShortVideosController extends GetxController {
     if (isDisliked.value) {
       // Remove dislike (would need to delete the reaction event)
       isDisliked.value = false;
+      dislikesCount.value = (dislikesCount.value - 1).clamp(0, double.infinity).toInt();
     } else {
       // Send dislike reaction to Nostr
       try {
@@ -253,7 +280,11 @@ class ShortVideosController extends GetxController {
         );
         ndk.broadcast.broadcast(nostrEvent: event);
         isDisliked.value = true;
+        if (isLiked.value) {
+          likesCount.value = (likesCount.value - 1).clamp(0, double.infinity).toInt();
+        }
         isLiked.value = false;
+        dislikesCount.value++;
       } catch (e) {
         if (kDebugMode) {
           print('Error sending dislike: $e');
