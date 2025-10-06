@@ -79,8 +79,6 @@ class UploadVideoController extends GetxController {
       thumbnailUrlController.text = video.thumbnails.maxResUrl;
       durationController.text = video.duration?.inSeconds.toString() ?? '';
 
-      print('YouTube Thumbnail URL: ${video.thumbnails.maxResUrl}');
-
       showDetailsForm.value = true;
 
       yt.close();

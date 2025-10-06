@@ -42,7 +42,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   int _zapsCount = 0;
 
   // Comments
-  List<Nip01Event> _comments = [];
+  final List<Nip01Event> _comments = [];
   final Map<String, Metadata?> _commentsMetadata = {};
 
   @override

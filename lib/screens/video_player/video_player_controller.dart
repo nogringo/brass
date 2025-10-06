@@ -155,7 +155,7 @@ class VideoPlayerController extends GetxController {
         await ndk.follows.broadcastRemoveContact(currentVideo!.authorPubkey);
         isFollowing.value = false;
         toastification.show(
-          context: context,
+          context: Get.context,
           type: ToastificationType.success,
           title: const Text('Unfollowed'),
           alignment: Alignment.bottomRight,
@@ -165,7 +165,7 @@ class VideoPlayerController extends GetxController {
         await ndk.follows.broadcastAddContact(currentVideo!.authorPubkey);
         isFollowing.value = true;
         toastification.show(
-          context: context,
+          context: Get.context,
           type: ToastificationType.success,
           title: const Text('Following'),
           alignment: Alignment.bottomRight,
@@ -177,7 +177,7 @@ class VideoPlayerController extends GetxController {
         print('Error toggling follow: $e');
       }
       toastification.show(
-        context: context,
+        context: Get.context,
         type: ToastificationType.error,
         title: const Text('Failed to update follow status'),
         description: Text(e.toString()),
