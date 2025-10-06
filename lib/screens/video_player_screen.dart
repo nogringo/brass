@@ -97,7 +97,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               aspectRatio: 16 / 9,
               child: Video(
                 controller: _controller,
-                controls: MaterialVideoControls,
+                controls: AdaptiveVideoControls,
               ),
             ),
             // Video Info
