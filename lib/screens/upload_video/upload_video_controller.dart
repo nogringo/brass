@@ -9,6 +9,7 @@ class UploadVideoController extends GetxController {
   final Rx<PlatformFile?> selectedFile = Rx<PlatformFile?>(null);
   final RxBool isYouTubeUrl = false.obs;
   final RxBool isUploading = false.obs;
+  final RxBool showDetailsForm = false.obs;
 
   @override
   void onInit() {
@@ -53,6 +54,6 @@ class UploadVideoController extends GetxController {
   }
 
   void importFromYouTube() {
-    // This will be called by the screen
+    showDetailsForm.value = true;
   }
 }

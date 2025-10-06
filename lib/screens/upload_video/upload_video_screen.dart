@@ -6,6 +6,7 @@ import '../../repository.dart';
 import '../login_screen.dart';
 import 'upload_video_controller.dart';
 import 'views/import_video_view.dart';
+import 'views/video_details_form_view.dart';
 
 class UploadVideoScreen extends StatefulWidget {
   const UploadVideoScreen({super.key});
@@ -29,11 +30,13 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
   @override
   void initState() {
     super.initState();
+    Get.put(UploadVideoController());
     _videoUrlController.addListener(_onVideoUrlChanged);
   }
 
   @override
   void dispose() {
+    Get.delete<UploadVideoController>();
     _videoUrlController.removeListener(_onVideoUrlChanged);
     _titleController.dispose();
     _descriptionController.dispose();
@@ -350,7 +353,25 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
               constraints: const BoxConstraints(maxWidth: 500),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: ImportVideoView(),
+                child: Obx(() {
+                  final controller = UploadVideoController.to;
+                  return controller.showDetailsForm.value
+                      ? VideoDetailsFormView(
+                          formKey: _formKey,
+                          titleController: _titleController,
+                          descriptionController: _descriptionController,
+                          thumbnailUrlController: _thumbnailUrlController,
+                          durationController: _durationController,
+                          isShortVideo: _isShortVideo,
+                          onVideoTypeChanged: (value) {
+                            setState(() {
+                              _isShortVideo = value;
+                            });
+                          },
+                          onPublish: _publishVideo,
+                        )
+                      : const ImportVideoView();
+                }),
               ),
             ),
           ),
