@@ -76,8 +76,10 @@ class UploadVideoController extends GetxController {
       // Prefill form fields with YouTube metadata
       titleController.text = video.title;
       descriptionController.text = video.description;
-      thumbnailUrlController.text = video.thumbnails.highResUrl;
+      thumbnailUrlController.text = video.thumbnails.maxResUrl;
       durationController.text = video.duration?.inSeconds.toString() ?? '';
+
+      print('YouTube Thumbnail URL: ${video.thumbnails.maxResUrl}');
 
       showDetailsForm.value = true;
 

@@ -197,9 +197,8 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
     if (isLocalFile) {
       return Image.file(
         File(thumbnailUrl),
-        height: 200,
         width: double.infinity,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
         errorBuilder: (context, error, stackTrace) {
           return Container(
             height: 200,
@@ -213,9 +212,8 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
     } else {
       return Image.network(
         thumbnailUrl,
-        height: 200,
         width: double.infinity,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
         errorBuilder: (context, error, stackTrace) {
           return Container(
             height: 200,
