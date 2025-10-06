@@ -34,11 +34,17 @@ class MainApp extends StatelessWidget {
         localizationsDelegates: [nostr_widgets.AppLocalizations.delegate],
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.cyan),
+          inputDecorationTheme: InputDecorationTheme(
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
         ),
         darkTheme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
             seedColor: Colors.cyan,
             brightness: Brightness.dark,
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ),
         home: const HomeScreen(),

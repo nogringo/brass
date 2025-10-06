@@ -45,46 +45,6 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
           ),
           const SizedBox(height: 16),
 
-          // Video type selector
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Video Type',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: RadioListTile<bool>(
-                          title: const Text('Normal Video'),
-                          value: false,
-                          groupValue: widget.isShortVideo,
-                          onChanged: (value) =>
-                              widget.onVideoTypeChanged(value!),
-                        ),
-                      ),
-                      Expanded(
-                        child: RadioListTile<bool>(
-                          title: const Text('Short Video'),
-                          value: true,
-                          groupValue: widget.isShortVideo,
-                          onChanged: (value) =>
-                              widget.onVideoTypeChanged(value!),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-
           // Thumbnail preview for YouTube videos
           if (isYouTube && widget.thumbnailUrlController.text.isNotEmpty)
             Column(
@@ -96,7 +56,7 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
                 ),
                 const SizedBox(height: 8),
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                   child: Image.network(
                     widget.thumbnailUrlController.text,
                     height: 200,
@@ -118,13 +78,11 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
             ),
 
           // Title field
+          Text('Title *', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 8),
           TextFormField(
             controller: widget.titleController,
-            decoration: const InputDecoration(
-              labelText: 'Title *',
-              hintText: 'Enter video title',
-              border: OutlineInputBorder(),
-            ),
+            decoration: const InputDecoration(hintText: 'Enter video title'),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
                 return 'Title is required';
@@ -135,12 +93,12 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
           const SizedBox(height: 16),
 
           // Description field
+          Text('Description', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 8),
           TextFormField(
             controller: widget.descriptionController,
             decoration: const InputDecoration(
-              labelText: 'Description',
               hintText: 'Enter video description',
-              border: OutlineInputBorder(),
             ),
             maxLines: 4,
           ),
@@ -153,7 +111,6 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
               decoration: const InputDecoration(
                 labelText: 'Thumbnail URL (optional)',
                 hintText: 'https://example.com/thumbnail.jpg',
-                border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
@@ -171,10 +128,29 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
             const SizedBox(height: 16),
           ],
 
+          // Video type selector
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Short Video',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              Switch(
+                value: widget.isShortVideo,
+                onChanged: (value) => widget.onVideoTypeChanged(value),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
           // Publish button
           Obx(
             () => FilledButton(
               onPressed: controller.isUploading.value ? null : widget.onPublish,
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
               child: controller.isUploading.value
                   ? const SizedBox(
                       height: 20,
