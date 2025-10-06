@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/nostr_channel.dart';
 import '../repository.dart';
-import 'video_player_screen.dart';
+import 'video_player/video_player_screen.dart';
 
 class ChannelScreen extends StatefulWidget {
   final String pubkey;

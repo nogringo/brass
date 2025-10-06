@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
 import '../models/nostr_video.dart';
 import '../repository.dart';
-import 'video_player_screen.dart';
+import 'video_player/video_player_screen.dart';
 
 enum VideoType { long, short }
 
