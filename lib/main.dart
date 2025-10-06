@@ -3,18 +3,20 @@ import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:ndk/ndk.dart';
 import 'package:ndk_rust_verifier/data_layer/repositories/verifiers/rust_event_verifier.dart';
+import 'package:nostr_widgets/functions/functions.dart';
 import 'package:toastification/toastification.dart';
 import 'repository.dart';
 import 'screens/home_screen.dart';
 import 'package:nostr_widgets/l10n/app_localizations.dart' as nostr_widgets;
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
 
   final ndk = Ndk(
     NdkConfig(eventVerifier: RustEventVerifier(), cache: MemCacheManager()),
   );
+  await nRestoreAccounts(ndk);
   Get.put(ndk);
   Get.put(Repository());
 

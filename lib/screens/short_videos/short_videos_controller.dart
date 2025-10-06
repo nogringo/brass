@@ -8,6 +8,7 @@ import 'package:audio_service/audio_service.dart';
 import '../../models/nostr_video.dart';
 import '../../repository.dart';
 import '../channel_screen.dart';
+import '../login_screen.dart';
 
 class ShortVideosController extends GetxController {
   static ShortVideosController get to => Get.find();
@@ -175,11 +176,27 @@ class ShortVideosController extends GetxController {
   }
 
   void onSubscribeTap() {
+    final ndk = Repository.ndk;
+    final pubkey = ndk.accounts.getPublicKey();
+
+    if (pubkey == null) {
+      Get.to(() => const LoginScreen());
+      return;
+    }
+
     isSubscribed.toggle();
   }
 
   void onLikeTap() async {
     if (currentVideo == null) return;
+
+    final ndk = Repository.ndk;
+    final pubkey = ndk.accounts.getPublicKey();
+
+    if (pubkey == null) {
+      Get.to(() => const LoginScreen());
+      return;
+    }
 
     if (isLiked.value) {
       // Remove like (would need to delete the reaction event)
@@ -187,9 +204,8 @@ class ShortVideosController extends GetxController {
     } else {
       // Send like reaction to Nostr
       try {
-        final ndk = Repository.ndk;
         final event = Nip01Event(
-          pubKey: ndk.accounts.getPublicKey()!,
+          pubKey: pubkey,
           kind: 7,
           content: '+',
           tags: [
@@ -211,15 +227,22 @@ class ShortVideosController extends GetxController {
   void onDislikeTap() async {
     if (currentVideo == null) return;
 
+    final ndk = Repository.ndk;
+    final pubkey = ndk.accounts.getPublicKey();
+
+    if (pubkey == null) {
+      Get.to(() => const LoginScreen());
+      return;
+    }
+
     if (isDisliked.value) {
       // Remove dislike (would need to delete the reaction event)
       isDisliked.value = false;
     } else {
       // Send dislike reaction to Nostr
       try {
-        final ndk = Repository.ndk;
         final event = Nip01Event(
-          pubKey: ndk.accounts.getPublicKey()!,
+          pubKey: pubkey,
           kind: 7,
           content: '-',
           tags: [
