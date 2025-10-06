@@ -3,6 +3,7 @@ import 'package:toastification/toastification.dart';
 import '../models/nostr_video.dart';
 import '../repository.dart';
 import 'video_player/video_player_screen.dart';
+import 'upload_video/upload_video_screen.dart';
 
 enum VideoType { long, short }
 
@@ -102,19 +103,19 @@ class _VideoListScreenState extends State<VideoListScreen> {
         surfaceTintColor: Colors.transparent,
         title: Text(title),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
+          FilledButton.icon(
+            icon: const Icon(Icons.add),
+            label: Text("Upload"),
             onPressed: () {
-              setState(() {
-                if (widget.videoType == VideoType.long) {
-                  _repository.normalVideos.clear();
-                } else {
-                  _repository.shortsVideos.clear();
-                }
-              });
-              _loadVideos();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const UploadVideoScreen(),
+                ),
+              );
             },
           ),
+          SizedBox(width: 12),
         ],
       ),
       body: _isLoading && _videos.isEmpty

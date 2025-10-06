@@ -5,6 +5,7 @@ import 'package:nostr_widgets/functions/n_save_accounts_state.dart';
 import 'package:toastification/toastification.dart';
 import '../repository.dart';
 import 'login_screen.dart';
+import 'upload_video/upload_video_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -219,6 +220,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
+            actions: [
+              FilledButton.icon(
+                icon: const Icon(Icons.add),
+                label: Text("Upload"),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const UploadVideoScreen(),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(width: 12),
+            ],
           ),
           SliverToBoxAdapter(
             child: Padding(
