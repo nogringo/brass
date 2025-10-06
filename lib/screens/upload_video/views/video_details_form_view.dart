@@ -77,7 +77,9 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
                         } catch (e) {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Failed to select image: $e')),
+                              SnackBar(
+                                content: Text('Failed to select image: $e'),
+                              ),
                             );
                           }
                         }
@@ -191,8 +193,9 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
     final thumbnailUrl = widget.thumbnailUrlController.text;
 
     // Check if it's a local file path or URL
-    final isLocalFile = !thumbnailUrl.startsWith('http://') &&
-                       !thumbnailUrl.startsWith('https://');
+    final isLocalFile =
+        !thumbnailUrl.startsWith('http://') &&
+        !thumbnailUrl.startsWith('https://');
 
     if (isLocalFile) {
       return Image.file(
@@ -203,9 +206,7 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
           return Container(
             height: 200,
             color: Colors.grey[300],
-            child: const Center(
-              child: Icon(Icons.broken_image, size: 50),
-            ),
+            child: const Center(child: Icon(Icons.broken_image, size: 50)),
           );
         },
       );
@@ -218,9 +219,7 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
           return Container(
             height: 200,
             color: Colors.grey[300],
-            child: const Center(
-              child: Icon(Icons.broken_image, size: 50),
-            ),
+            child: const Center(child: Icon(Icons.broken_image, size: 50)),
           );
         },
       );

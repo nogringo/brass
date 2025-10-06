@@ -50,7 +50,13 @@ class ImportVideoView extends StatelessWidget {
         Obx(
           () => FilledButton(
             onPressed: !controller.isUploading.value
-                ? controller.selectFile
+                ? () async {
+                    await controller.selectFile();
+                    // Show form after file selection
+                    if (controller.selectedFile.value != null) {
+                      controller.showDetailsForm.value = true;
+                    }
+                  }
                 : null,
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 20),

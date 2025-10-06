@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ndk/ndk.dart';
@@ -31,33 +32,6 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
     super.dispose();
   }
 
-  String _convertYouTubeUrl(String url) {
-    // Convert YouTube URL to embed URL
-    if (url.contains('youtube.com/watch?v=')) {
-      final videoId = Uri.parse(url).queryParameters['v'];
-      return 'https://www.youtube.com/embed/$videoId';
-    } else if (url.contains('youtu.be/')) {
-      final videoId = url.split('youtu.be/').last.split('?').first;
-      return 'https://www.youtube.com/embed/$videoId';
-    }
-    return url;
-  }
-
-  String? _extractYouTubeThumbnail(String url) {
-    // Extract video ID and generate thumbnail URL
-    String? videoId;
-    if (url.contains('youtube.com/watch?v=')) {
-      videoId = Uri.parse(url).queryParameters['v'];
-    } else if (url.contains('youtu.be/')) {
-      videoId = url.split('youtu.be/').last.split('?').first;
-    }
-
-    if (videoId != null) {
-      return 'https://img.youtube.com/vi/$videoId/maxresdefault.jpg';
-    }
-    return null;
-  }
-
   Future<void> _publishVideo() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -73,20 +47,53 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
     controller.isUploading.value = true;
 
     try {
-      // Process video URL
-      String videoUrl = controller.videoUrlController.text.trim();
+      String? videoUrl;
       String? thumbnailUrl = controller.thumbnailUrlController.text.trim();
 
-      // If YouTube URL, convert and extract thumbnail
-      if (controller.isYouTubeUrl.value) {
-        videoUrl = _convertYouTubeUrl(videoUrl);
-        if (thumbnailUrl.isEmpty) {
-          thumbnailUrl =
-              _extractYouTubeThumbnail(
-                controller.videoUrlController.text.trim(),
-              ) ??
-              '';
+      // Check if this is a YouTube import (downloaded video)
+      if (controller.downloadedVideoPath != null) {
+        // Upload downloaded YouTube video to Blossom
+        final videoFile = File(controller.downloadedVideoPath!);
+        final videoBytes = await videoFile.readAsBytes();
+        final uploadResults = await ndk.blossom.uploadBlob(
+          data: videoBytes,
+          contentType: 'video/mp4',
+          serverMediaOptimisation: true,
+        );
+
+        if (uploadResults.isNotEmpty) {
+          videoUrl = uploadResults.first.toString();
+        } else {
+          throw Exception('Failed to upload YouTube video');
         }
+
+        // Upload downloaded thumbnail
+        if (controller.downloadedThumbnailPath != null) {
+          thumbnailUrl = await controller.uploadThumbnailToBlossom(
+            controller.downloadedThumbnailPath!,
+          );
+        }
+      } else if (controller.selectedFile.value != null) {
+        // Upload local video file to Blossom
+        videoUrl = await controller.uploadVideoToBlossom();
+        if (videoUrl == null) {
+          throw Exception('Failed to upload video file');
+        }
+
+        // Upload thumbnail if it's a local file
+        if (thumbnailUrl.isNotEmpty &&
+            !thumbnailUrl.startsWith('http://') &&
+            !thumbnailUrl.startsWith('https://')) {
+          thumbnailUrl = await controller.uploadThumbnailToBlossom(
+            thumbnailUrl,
+          );
+        }
+      } else {
+        throw Exception('No video selected or URL provided');
+      }
+
+      if (videoUrl.isEmpty) {
+        throw Exception('Video URL is required');
       }
 
       // Create NIP-71 video event
@@ -98,7 +105,8 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
         tags: [
           ['title', controller.titleController.text.trim()],
           ['imeta', 'url $videoUrl'],
-          if (thumbnailUrl.isNotEmpty) ['image', thumbnailUrl],
+          if (thumbnailUrl != null && thumbnailUrl.isNotEmpty)
+            ['image', thumbnailUrl],
           if (controller.durationController.text.isNotEmpty)
             ['duration', controller.durationController.text.trim()],
         ],
