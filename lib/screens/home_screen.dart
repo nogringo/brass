@@ -1,7 +1,9 @@
 import 'package:brass/screens/short_videos/short_videos_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'video_list_screen.dart';
 import 'profile_screen.dart';
+import 'short_videos/short_videos_controller.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,6 +21,22 @@ class _HomeScreenState extends State<HomeScreen> {
     const ProfileScreen(),
   ];
 
+  void _onTabChanged(int index) {
+    // If leaving shorts tab (index 1), pause the video
+    if (_currentIndex == 1 && index != 1) {
+      try {
+        final controller = Get.find<ShortVideosController>();
+        controller.pauseVideo();
+      } catch (e) {
+        // Controller not found, ignore
+      }
+    }
+
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -32,9 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
             NavigationRail(
               selectedIndex: _currentIndex,
               onDestinationSelected: (int index) {
-                setState(() {
-                  _currentIndex = index;
-                });
+                _onTabChanged(index);
               },
               extended: isVeryWideScreen,
               labelType: isVeryWideScreen ? null : NavigationRailLabelType.all,
@@ -64,9 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
           : NavigationBar(
               selectedIndex: _currentIndex,
               onDestinationSelected: (int index) {
-                setState(() {
-                  _currentIndex = index;
-                });
+                _onTabChanged(index);
               },
               destinations: const [
                 NavigationDestination(
