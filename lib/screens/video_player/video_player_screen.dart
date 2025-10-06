@@ -216,17 +216,25 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final maxVideoHeight = screenHeight * 0.7;
+
     return Scaffold(
       appBar: AppBar(title: Text(widget.video.title)),
       body: SingleChildScrollView(
         child: Column(
           children: [
             // Video Player
-            AspectRatio(
-              aspectRatio: 16 / 9,
-              child: Video(
-                controller: _controller,
-                controls: AdaptiveVideoControls,
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: maxVideoHeight,
+              ),
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Video(
+                  controller: _controller,
+                  controls: AdaptiveVideoControls,
+                ),
               ),
             ),
             // Video Info
