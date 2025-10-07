@@ -1,3 +1,3 @@
-# brass
+# Brass
 
-A new Flutter project.
+Nostr video player.
