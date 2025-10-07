@@ -543,7 +543,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             else
               ...List.generate(_repository.playlists.length, (index) {
                 final playlist = _repository.playlists[index];
-                final isVideoInPlaylist = playlist.videoIds.contains(widget.video.id);
+                final isVideoInPlaylist = playlist.videoIds.contains(
+                  widget.video.id,
+                );
 
                 return ListTile(
                   leading: CircleAvatar(
@@ -579,7 +581,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                             toastification.show(
                               context: navigator.context,
                               type: ToastificationType.error,
-                              title: const Text('Failed to add video to playlist'),
+                              title: const Text(
+                                'Failed to add video to playlist',
+                              ),
                               description: Text(e.toString()),
                               alignment: Alignment.bottomRight,
                               autoCloseDuration: const Duration(seconds: 3),

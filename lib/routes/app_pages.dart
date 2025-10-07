@@ -38,16 +38,12 @@ class AppPages {
           // For now, show error or loading screen
           return Scaffold(
             appBar: AppBar(title: const Text('Video')),
-            body: Center(
-              child: Text('Loading video: $videoId'),
-            ),
+            body: Center(child: Text('Loading video: $videoId')),
           );
         }
 
         // Fallback
-        return const Scaffold(
-          body: Center(child: Text('Video not found')),
-        );
+        return const Scaffold(body: Center(child: Text('Video not found')));
       },
     ),
     GetPage(name: AppRoutes.shortVideos, page: () => const ShortVideosScreen()),

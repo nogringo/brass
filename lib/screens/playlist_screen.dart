@@ -26,6 +26,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
   }
 
   Future<void> _loadPlaylists() async {
+    if (!mounted) return;
+
     setState(() {
       _isLoading = true;
     });
@@ -55,6 +57,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
         }
       }
     }
+
+    if (!mounted) return;
 
     setState(() {
       _isLoading = false;

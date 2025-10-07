@@ -35,29 +35,22 @@ class ChannelInfoView extends StatelessWidget {
                       NName(
                         ndk: Get.find(),
                         pubkey: pubkey,
-                        style: Theme.of(
-                          context,
-                        ).textTheme.titleLarge,
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      if (controller.channel.value?.nip05 !=
-                          null) ...[
+                      if (controller.channel.value?.nip05 != null) ...[
                         const SizedBox(height: 4),
                         Row(
                           children: [
                             Icon(
                               Icons.verified,
                               size: 16,
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.primary,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(
                                 controller.channel.value!.nip05!,
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.bodySmall,
+                                style: Theme.of(context).textTheme.bodySmall,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -67,14 +60,9 @@ class ChannelInfoView extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         '${controller.videos.length + controller.shorts.length} videos',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSurfaceVariant,
-                            ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ),
@@ -93,22 +81,26 @@ class ChannelInfoView extends StatelessWidget {
               () => SizedBox(
                 width: double.infinity,
                 child: FilledButton.icon(
-                  onPressed: controller.toggleFollow,
-                  icon: Icon(
-                    controller.isFollowing.value
-                        ? Icons.person_remove
-                        : Icons.person_add,
-                  ),
+                  onPressed: controller.isLoadingFollow.value
+                      ? null
+                      : () => controller.toggleFollow(context),
+                  icon: controller.isLoadingFollow.value
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Icon(
+                          controller.isFollowing.value
+                              ? Icons.person_remove
+                              : Icons.person_add,
+                        ),
                   label: Text(
-                    controller.isFollowing.value
-                        ? 'Unfollow'
-                        : 'Follow',
+                    controller.isFollowing.value ? 'Unfollow' : 'Follow',
                   ),
                   style: FilledButton.styleFrom(
                     backgroundColor: controller.isFollowing.value
-                        ? Theme.of(
-                            context,
-                          ).colorScheme.surfaceContainerHighest
+                        ? Theme.of(context).colorScheme.surfaceContainerHighest
                         : Theme.of(context).colorScheme.primary,
                     foregroundColor: controller.isFollowing.value
                         ? Theme.of(context).colorScheme.onSurface
