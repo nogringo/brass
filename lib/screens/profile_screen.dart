@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -353,7 +354,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             },
           ),
           const SizedBox(width: 12),
-          if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
+          if (!kIsWeb &&
+              (Platform.isLinux || Platform.isWindows || Platform.isMacOS))
             const SizedBox(width: 154),
         ],
       ),

@@ -14,10 +14,7 @@ class AppNavigation {
   }
 
   static void toVideoPlayer(NostrVideo video) {
-    Get.toNamed(
-      AppRoutes.videoPlayer,
-      arguments: video,
-    );
+    Get.toNamed(AppRoutes.videoPlayer, arguments: video);
   }
 
   static void toShortVideos() {
@@ -25,10 +22,7 @@ class AppNavigation {
   }
 
   static void toChannel(String pubkey) {
-    Get.toNamed(
-      AppRoutes.channel,
-      arguments: pubkey,
-    );
+    Get.toNamed(AppRoutes.channel, arguments: pubkey);
   }
 
   static void toUploadVideo() {
@@ -36,17 +30,11 @@ class AppNavigation {
   }
 
   static void toVideoList(VideoType videoType) {
-    Get.toNamed(
-      AppRoutes.videoList,
-      arguments: videoType,
-    );
+    Get.toNamed(AppRoutes.videoList, arguments: videoType);
   }
 
   static void toLikedVideos(List<dynamic> likedVideos) {
-    Get.toNamed(
-      AppRoutes.likedVideos,
-      arguments: likedVideos,
-    );
+    Get.toNamed(AppRoutes.likedVideos, arguments: likedVideos);
   }
 
   static void toProfile() {
@@ -58,10 +46,7 @@ class AppNavigation {
   }
 
   static void toPlaylistDetail(NostrPlaylist playlist) {
-    Get.toNamed(
-      AppRoutes.playlistDetail,
-      arguments: playlist,
-    );
+    Get.toNamed(AppRoutes.playlistDetail, arguments: playlist);
   }
 
   static void toThemeSettings() {

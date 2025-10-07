@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toastification/toastification.dart';
@@ -176,7 +177,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
               onPressed: _showCreatePlaylistDialog,
             ),
           const SizedBox(width: 12),
-          if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
+          if (!kIsWeb &&
+              (Platform.isLinux || Platform.isWindows || Platform.isMacOS))
             const SizedBox(width: 154),
         ],
       ),

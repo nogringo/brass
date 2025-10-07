@@ -18,14 +18,8 @@ import 'app_routes.dart';
 
 class AppPages {
   static final routes = [
-    GetPage(
-      name: AppRoutes.home,
-      page: () => const HomeScreen(),
-    ),
-    GetPage(
-      name: AppRoutes.login,
-      page: () => const LoginScreen(),
-    ),
+    GetPage(name: AppRoutes.home, page: () => const HomeScreen()),
+    GetPage(name: AppRoutes.login, page: () => const LoginScreen()),
     GetPage(
       name: AppRoutes.videoPlayer,
       page: () {
@@ -33,10 +27,7 @@ class AppPages {
         return VideoPlayerScreen(video: video);
       },
     ),
-    GetPage(
-      name: AppRoutes.shortVideos,
-      page: () => const ShortVideosScreen(),
-    ),
+    GetPage(name: AppRoutes.shortVideos, page: () => const ShortVideosScreen()),
     GetPage(
       name: AppRoutes.channel,
       page: () {
@@ -44,10 +35,7 @@ class AppPages {
         return ChannelScreen(pubkey: pubkey);
       },
     ),
-    GetPage(
-      name: AppRoutes.uploadVideo,
-      page: () => const UploadVideoScreen(),
-    ),
+    GetPage(name: AppRoutes.uploadVideo, page: () => const UploadVideoScreen()),
     GetPage(
       name: AppRoutes.videoList,
       page: () {
@@ -62,14 +50,8 @@ class AppPages {
         return LikedVideosScreen(likedVideos: likedVideos);
       },
     ),
-    GetPage(
-      name: AppRoutes.profile,
-      page: () => const ProfileScreen(),
-    ),
-    GetPage(
-      name: AppRoutes.playlist,
-      page: () => const PlaylistScreen(),
-    ),
+    GetPage(name: AppRoutes.profile, page: () => const ProfileScreen()),
+    GetPage(name: AppRoutes.playlist, page: () => const PlaylistScreen()),
     GetPage(
       name: AppRoutes.playlistDetail,
       page: () {

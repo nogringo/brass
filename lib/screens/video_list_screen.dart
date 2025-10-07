@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
 import '../models/nostr_video.dart';
@@ -118,7 +119,8 @@ class _VideoListScreenState extends State<VideoListScreen> {
             },
           ),
           SizedBox(width: 12),
-          if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
+          if (!kIsWeb &&
+              (Platform.isLinux || Platform.isWindows || Platform.isMacOS))
             SizedBox(width: 154),
         ],
       ),

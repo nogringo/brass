@@ -87,7 +87,9 @@ class ShortsGridView extends StatelessWidget {
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       image: video.thumbnailUrl != null
                           ? DecorationImage(
                               image: NetworkImage(video.thumbnailUrl!),
@@ -102,7 +104,9 @@ class ShortsGridView extends StatelessWidget {
                             child: Icon(
                               Icons.play_circle_outline,
                               size: 40,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                           ),
                         if (video.duration != null)
@@ -115,16 +119,17 @@ class ShortsGridView extends StatelessWidget {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .scrim
-                                    .withValues(alpha: 0.87),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.scrim.withValues(alpha: 0.87),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
                                 _formatDuration(video.duration),
                                 style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onPrimary,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimary,
                                   fontSize: 10,
                                 ),
                               ),

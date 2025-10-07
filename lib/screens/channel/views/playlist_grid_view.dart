@@ -50,7 +50,8 @@ class PlaylistGridView extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => PlaylistDetailScreen(playlist: playlist),
+                  builder: (context) =>
+                      PlaylistDetailScreen(playlist: playlist),
                 ),
               );
             },
@@ -61,7 +62,9 @@ class PlaylistGridView extends StatelessWidget {
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       image: playlist.image?.isNotEmpty == true
                           ? DecorationImage(
                               image: NetworkImage(playlist.image!),
@@ -74,7 +77,9 @@ class PlaylistGridView extends StatelessWidget {
                             child: Icon(
                               Icons.playlist_play,
                               size: 40,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                           )
                         : null,

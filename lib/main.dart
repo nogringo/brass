@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:brass/utils/get_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
@@ -24,7 +25,7 @@ void main() async {
   // Load system accent color
   await SystemTheme.accentColor.load();
 
-  if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+  if (!kIsWeb && (Platform.isLinux || Platform.isWindows || Platform.isMacOS)) {
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = WindowOptions(
       titleBarStyle: TitleBarStyle.hidden,
@@ -67,7 +68,8 @@ class MainApp extends StatelessWidget {
           initialRoute: AppRoutes.home,
           getPages: AppPages.routes,
           builder: (context, child) {
-            if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+            if (!kIsWeb &&
+                (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
               return DragToResizeArea(
                 child: Stack(
                   children: [

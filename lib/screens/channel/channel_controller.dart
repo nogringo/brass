@@ -5,7 +5,8 @@ import '../../models/nostr_video.dart';
 import '../../models/playlist.dart';
 import '../../repository.dart';
 
-class ChannelController extends GetxController with GetSingleTickerProviderStateMixin {
+class ChannelController extends GetxController
+    with GetSingleTickerProviderStateMixin {
   static ChannelController get to => Get.find();
 
   final Repository _repository = Repository.to;
