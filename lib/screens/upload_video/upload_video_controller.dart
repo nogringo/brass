@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
@@ -16,6 +16,7 @@ class UploadVideoController extends GetxController {
   final durationController = TextEditingController();
 
   final Rx<PlatformFile?> selectedFile = Rx<PlatformFile?>(null);
+  final Rx<Uint8List?> selectedThumbnailBytes = Rx<Uint8List?>(null);
   final RxBool isUploading = false.obs;
   final RxBool showDetailsForm = false.obs;
 
@@ -65,14 +66,28 @@ class UploadVideoController extends GetxController {
   }
 
   Future<String?> uploadVideoToBlossom() async {
-    if (selectedFile.value == null || selectedFile.value!.path == null) {
+    if (selectedFile.value == null) {
       return null;
     }
 
     try {
       final ndk = Repository.ndk;
-      final file = File(selectedFile.value!.path!);
-      final Uint8List fileBytes = await file.readAsBytes();
+      Uint8List fileBytes;
+
+      // On web, use bytes directly from PlatformFile
+      if (kIsWeb) {
+        if (selectedFile.value!.bytes == null) {
+          throw Exception('No file bytes available for web upload');
+        }
+        fileBytes = selectedFile.value!.bytes!;
+      } else {
+        // On other platforms, read from file path
+        if (selectedFile.value!.path == null) {
+          throw Exception('No file path available');
+        }
+        final file = File(selectedFile.value!.path!);
+        fileBytes = await file.readAsBytes();
+      }
 
       // Upload video to Blossom
       final uploadResults = await ndk.blossom.uploadBlob(
@@ -108,12 +123,22 @@ class UploadVideoController extends GetxController {
   Future<String?> uploadThumbnailToBlossom(String thumbnailPath) async {
     try {
       final ndk = Repository.ndk;
-      final file = File(thumbnailPath);
-      final Uint8List fileBytes = await file.readAsBytes();
+      Uint8List fileBytes;
+      String contentType;
 
-      // Get file extension for content type
-      final extension = thumbnailPath.split('.').last.toLowerCase();
-      final contentType = 'image/$extension';
+      // On web, use the stored bytes
+      if (kIsWeb && selectedThumbnailBytes.value != null) {
+        fileBytes = selectedThumbnailBytes.value!;
+        // Try to infer content type from file name
+        final extension = thumbnailPath.split('.').last.toLowerCase();
+        contentType = 'image/$extension';
+      } else {
+        // On other platforms, read from file
+        final file = File(thumbnailPath);
+        fileBytes = await file.readAsBytes();
+        final extension = thumbnailPath.split('.').last.toLowerCase();
+        contentType = 'image/$extension';
+      }
 
       // Upload thumbnail to Blossom
       final uploadResults = await ndk.blossom.uploadBlob(

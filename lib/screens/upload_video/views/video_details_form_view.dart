@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
@@ -94,10 +95,16 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
 
                         if (result != null && result.files.isNotEmpty) {
                           final file = result.files.first;
-                          if (file.path != null) {
+                          // On web, store the file name as a marker
+                          // On other platforms, store the file path
+                          if (kIsWeb) {
+                            // Store file bytes reference for web
+                            controller.selectedThumbnailBytes.value = file.bytes;
+                            widget.thumbnailUrlController.text = file.name;
+                          } else if (file.path != null) {
                             widget.thumbnailUrlController.text = file.path!;
-                            setState(() {});
                           }
+                          setState(() {});
                         }
                       } catch (e) {
                         if (context.mounted) {
@@ -171,26 +178,14 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
 
   Widget _buildThumbnailImage() {
     final thumbnailUrl = widget.thumbnailUrlController.text;
+    final controller = UploadVideoController.to;
 
-    // Check if it's a local file path or URL
-    final isLocalFile =
-        !thumbnailUrl.startsWith('http://') &&
-        !thumbnailUrl.startsWith('https://');
+    // Check if it's a URL
+    final isUrl =
+        thumbnailUrl.startsWith('http://') ||
+        thumbnailUrl.startsWith('https://');
 
-    if (isLocalFile) {
-      return Image.file(
-        File(thumbnailUrl),
-        width: double.infinity,
-        fit: BoxFit.contain,
-        errorBuilder: (context, error, stackTrace) {
-          return Container(
-            height: 200,
-            color: Colors.grey[300],
-            child: const Center(child: Icon(Icons.broken_image, size: 50)),
-          );
-        },
-      );
-    } else {
+    if (isUrl) {
       return Image.network(
         thumbnailUrl,
         width: double.infinity,
@@ -204,5 +199,44 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
         },
       );
     }
+
+    // On web, use Image.memory with stored bytes
+    if (kIsWeb && controller.selectedThumbnailBytes.value != null) {
+      return Image.memory(
+        controller.selectedThumbnailBytes.value!,
+        width: double.infinity,
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            height: 200,
+            color: Colors.grey[300],
+            child: const Center(child: Icon(Icons.broken_image, size: 50)),
+          );
+        },
+      );
+    }
+
+    // On other platforms, use Image.file
+    if (!kIsWeb) {
+      return Image.file(
+        File(thumbnailUrl),
+        width: double.infinity,
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            height: 200,
+            color: Colors.grey[300],
+            child: const Center(child: Icon(Icons.broken_image, size: 50)),
+          );
+        },
+      );
+    }
+
+    // Fallback
+    return Container(
+      height: 200,
+      color: Colors.grey[300],
+      child: const Center(child: Icon(Icons.broken_image, size: 50)),
+    );
   }
 }
