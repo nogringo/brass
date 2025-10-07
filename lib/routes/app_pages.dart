@@ -1,0 +1,89 @@
+import 'package:get/get.dart';
+import '../screens/home_screen.dart';
+import '../screens/login_screen.dart';
+import '../screens/video_player/video_player_screen.dart';
+import '../screens/short_videos/short_videos_screen.dart';
+import '../screens/channel/channel_screen.dart';
+import '../screens/upload_video/upload_video_screen.dart';
+import '../screens/video_list_screen.dart';
+import '../screens/liked_videos_screen.dart';
+import '../screens/profile_screen.dart';
+import '../screens/playlist_screen.dart';
+import '../screens/playlist_detail_screen.dart';
+import '../screens/settings/theme_settings_screen.dart';
+import '../screens/settings/blossom_settings_screen.dart';
+import '../models/nostr_video.dart';
+import '../models/playlist.dart';
+import 'app_routes.dart';
+
+class AppPages {
+  static final routes = [
+    GetPage(
+      name: AppRoutes.home,
+      page: () => const HomeScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.login,
+      page: () => const LoginScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.videoPlayer,
+      page: () {
+        final video = Get.arguments as NostrVideo;
+        return VideoPlayerScreen(video: video);
+      },
+    ),
+    GetPage(
+      name: AppRoutes.shortVideos,
+      page: () => const ShortVideosScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.channel,
+      page: () {
+        final pubkey = Get.arguments as String;
+        return ChannelScreen(pubkey: pubkey);
+      },
+    ),
+    GetPage(
+      name: AppRoutes.uploadVideo,
+      page: () => const UploadVideoScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.videoList,
+      page: () {
+        final videoType = Get.arguments as VideoType;
+        return VideoListScreen(videoType: videoType);
+      },
+    ),
+    GetPage(
+      name: AppRoutes.likedVideos,
+      page: () {
+        final likedVideos = Get.arguments as List<dynamic>;
+        return LikedVideosScreen(likedVideos: likedVideos);
+      },
+    ),
+    GetPage(
+      name: AppRoutes.profile,
+      page: () => const ProfileScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.playlist,
+      page: () => const PlaylistScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.playlistDetail,
+      page: () {
+        final playlist = Get.arguments as NostrPlaylist;
+        return PlaylistDetailScreen(playlist: playlist);
+      },
+    ),
+    GetPage(
+      name: AppRoutes.themeSettings,
+      page: () => const ThemeSettingsScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.blossomSettings,
+      page: () => const BlossomSettingsScreen(),
+    ),
+  ];
+}
