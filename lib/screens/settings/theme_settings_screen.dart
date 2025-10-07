@@ -55,39 +55,59 @@ class ThemeSettingsScreen extends StatelessWidget {
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 16),
+
+          // Use System Accent toggle
           Obx(
-            () => Wrap(
-              spacing: 16,
-              runSpacing: 16,
-              children: ThemeProvider.accentColors.map((color) {
-                final isSelected = themeProvider.accentColor.value == color;
-                return InkWell(
-                  onTap: () => themeProvider.setAccentColor(color),
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    width: 56,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      color: color,
+            () => SwitchListTile(
+              title: const Text('Use System Accent Color'),
+              subtitle: const Text('Use the accent color from your system theme'),
+              value: themeProvider.useSystemAccent.value,
+              onChanged: (value) => themeProvider.setUseSystemAccent(value),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          Obx(
+            () => AnimatedOpacity(
+              opacity: themeProvider.useSystemAccent.value ? 0.5 : 1.0,
+              duration: const Duration(milliseconds: 200),
+              child: AbsorbPointer(
+                absorbing: themeProvider.useSystemAccent.value,
+                child: Wrap(
+                  spacing: 16,
+                  runSpacing: 16,
+                  children: ThemeProvider.accentColors.map((color) {
+                    final isSelected = !themeProvider.useSystemAccent.value &&
+                        themeProvider.accentColor.value == color;
+                    return InkWell(
+                      onTap: () => themeProvider.setAccentColor(color),
                       borderRadius: BorderRadius.circular(8),
-                      border: isSelected
-                          ? Border.all(
-                              color: Theme.of(context).colorScheme.onSurface,
-                              width: 3,
-                            )
-                          : null,
-                    ),
-                    child: isSelected
-                        ? Icon(
-                            Icons.check,
-                            color: color.computeLuminance() > 0.5
-                                ? Colors.black
-                                : Colors.white,
-                          )
-                        : null,
-                  ),
-                );
-              }).toList(),
+                      child: Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: color,
+                          borderRadius: BorderRadius.circular(8),
+                          border: isSelected
+                              ? Border.all(
+                                  color: Theme.of(context).colorScheme.onSurface,
+                                  width: 3,
+                                )
+                              : null,
+                        ),
+                        child: isSelected
+                            ? Icon(
+                                Icons.check,
+                                color: color.computeLuminance() > 0.5
+                                    ? Colors.black
+                                    : Colors.white,
+                              )
+                            : null,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 32),

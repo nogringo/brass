@@ -10,6 +10,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:sembast_cache_manager/sembast_cache_manager.dart';
+import 'package:system_theme/system_theme.dart';
 import 'package:toastification/toastification.dart';
 import 'package:window_manager/window_manager.dart';
 import 'providers/theme_provider.dart';
@@ -20,6 +21,9 @@ import 'package:nostr_widgets/l10n/app_localizations.dart' as nostr_widgets;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
+
+  // Load system accent color
+  await SystemTheme.accentColor.load();
 
   if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
     await windowManager.ensureInitialized();
