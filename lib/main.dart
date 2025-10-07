@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:sembast_cache_manager/sembast_cache_manager.dart';
 import 'package:toastification/toastification.dart';
+import 'package:window_manager/window_manager.dart';
 import 'repository.dart';
 import 'screens/home_screen.dart';
 import 'package:nostr_widgets/l10n/app_localizations.dart' as nostr_widgets;
@@ -18,6 +19,14 @@ import 'package:nostr_widgets/l10n/app_localizations.dart' as nostr_widgets;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
+
+  if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+    await windowManager.ensureInitialized();
+    WindowOptions windowOptions = WindowOptions(
+      titleBarStyle: TitleBarStyle.hidden,
+    );
+    windowManager.waitUntilReadyToShow(windowOptions);
+  }
 
   final docDir = await getApplicationDocumentsDirectory();
   final dbPath = p.join(docDir.path, 'Brass/ndk-cache.db');

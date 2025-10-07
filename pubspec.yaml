@@ -24,6 +24,7 @@ dependencies:
   sembast: ^3.8.5+1
   sembast_cache_manager: ^1.0.3
   toastification: ^3.0.3
+  window_manager: ^0.5.1
 
 dev_dependencies:
   flutter_test:
