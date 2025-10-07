@@ -38,7 +38,9 @@ class ThemeProvider extends GetxController {
   Future<void> _loadThemeSettings() async {
     try {
       // Load use system accent preference
-      final savedUseSystemAccent = await _store.record('useSystemAccent').get(_db);
+      final savedUseSystemAccent = await _store
+          .record('useSystemAccent')
+          .get(_db);
       if (savedUseSystemAccent != null && savedUseSystemAccent is bool) {
         useSystemAccent.value = savedUseSystemAccent;
       }

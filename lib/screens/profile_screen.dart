@@ -252,10 +252,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Share Video',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            Text('Share Video', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 16),
             ListTile(
               leading: const Icon(Icons.video_library),
@@ -338,48 +335,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final isLoggedIn = pubkey != null;
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            surfaceTintColor: Theme.of(context).scaffoldBackgroundColor,
-            expandedHeight: 200,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              title: const Text('Profile'),
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Theme.of(context).colorScheme.primaryContainer,
-                      Theme.of(context).colorScheme.surface,
-                    ],
-                  ),
+      appBar: AppBar(
+        title: const Text('Profile'),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        surfaceTintColor: Theme.of(context).scaffoldBackgroundColor,
+        actions: [
+          FilledButton.icon(
+            icon: const Icon(Icons.add),
+            label: const Text("Upload"),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const UploadVideoScreen(),
+                ),
+              );
+            },
+          ),
+          const SizedBox(width: 12),
+          if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
+            const SizedBox(width: 154),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Header gradient background
+            Container(
+              height: 120,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Theme.of(context).colorScheme.primaryContainer,
+                    Theme.of(context).colorScheme.surface,
+                  ],
                 ),
               ),
             ),
-            actions: [
-              FilledButton.icon(
-                icon: const Icon(Icons.add),
-                label: Text("Upload"),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const UploadVideoScreen(),
-                    ),
-                  );
-                },
-              ),
-              SizedBox(width: 12),
-              if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
-                SizedBox(width: 154),
-            ],
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
+            Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
@@ -556,11 +551,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-          ),
-          if (isLoggedIn && _userVideos.isNotEmpty)
-            SliverPadding(
-              padding: const EdgeInsets.all(16),
-              sliver: SliverToBoxAdapter(
+            if (isLoggedIn && _userVideos.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -579,176 +572,179 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ],
                 ),
               ),
-            ),
-          if (isLoggedIn && _userVideos.isNotEmpty)
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 16 / 12,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                ),
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  final video = _userVideos[index];
-                  return Card(
-                    clipBehavior: Clip.antiAlias,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                VideoPlayerScreen(video: video),
-                          ),
-                        );
-                      },
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.surfaceContainerHighest,
-                                image: video.thumbnailUrl != null
-                                    ? DecorationImage(
-                                        image: NetworkImage(
-                                          video.thumbnailUrl!,
-                                        ),
-                                        fit: BoxFit.cover,
-                                      )
-                                    : null,
-                              ),
-                              child: Stack(
-                                children: [
-                                  if (video.thumbnailUrl == null)
-                                    Center(
-                                      child: Icon(
-                                        Icons.play_circle_outline,
-                                        size: 40,
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onSurfaceVariant,
-                                      ),
-                                    ),
-                                  if (video.duration != null)
-                                    Positioned(
-                                      bottom: 4,
-                                      right: 4,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 4,
-                                          vertical: 2,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .scrim
-                                              .withValues(alpha: 0.87),
-                                          borderRadius: BorderRadius.circular(
-                                            4,
+            if (isLoggedIn && _userVideos.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 16 / 12,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                  ),
+                  itemCount: _userVideos.length,
+                  itemBuilder: (context, index) {
+                    final video = _userVideos[index];
+                    return Card(
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  VideoPlayerScreen(video: video),
+                            ),
+                          );
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Container(
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.surfaceContainerHighest,
+                                  image: video.thumbnailUrl != null
+                                      ? DecorationImage(
+                                          image: NetworkImage(
+                                            video.thumbnailUrl!,
                                           ),
-                                        ),
-                                        child: Text(
-                                          _formatDuration(video.duration),
-                                          style: TextStyle(
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.onPrimary,
-                                            fontSize: 10,
-                                          ),
+                                          fit: BoxFit.cover,
+                                        )
+                                      : null,
+                                ),
+                                child: Stack(
+                                  children: [
+                                    if (video.thumbnailUrl == null)
+                                      Center(
+                                        child: Icon(
+                                          Icons.play_circle_outline,
+                                          size: 40,
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurfaceVariant,
                                         ),
                                       ),
-                                    ),
-                                  Positioned(
-                                    top: 4,
-                                    right: 4,
-                                    child: Material(
-                                      color: Colors.transparent,
-                                      child: PopupMenuButton<String>(
-                                        icon: Container(
-                                          padding: const EdgeInsets.all(4),
+                                    if (video.duration != null)
+                                      Positioned(
+                                        bottom: 4,
+                                        right: 4,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 4,
+                                            vertical: 2,
+                                          ),
                                           decoration: BoxDecoration(
                                             color: Theme.of(context)
                                                 .colorScheme
                                                 .scrim
                                                 .withValues(alpha: 0.87),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Icon(
-                                            Icons.more_vert,
-                                            size: 20,
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.onPrimary,
-                                          ),
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                        onSelected: (value) {
-                                          if (value == 'share') {
-                                            _shareVideo(video);
-                                          } else if (value == 'delete') {
-                                            _showDeleteDialog(video);
-                                          }
-                                        },
-                                        itemBuilder: (context) => [
-                                          const PopupMenuItem(
-                                            value: 'share',
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.share),
-                                                SizedBox(width: 12),
-                                                Text('Share'),
-                                              ],
+                                            borderRadius: BorderRadius.circular(
+                                              4,
                                             ),
                                           ),
-                                          const PopupMenuItem(
-                                            value: 'delete',
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.delete_outline),
-                                                SizedBox(width: 12),
-                                                Text('Delete'),
-                                              ],
+                                          child: Text(
+                                            _formatDuration(video.duration),
+                                            style: TextStyle(
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.onPrimary,
+                                              fontSize: 10,
                                             ),
                                           ),
-                                        ],
+                                        ),
+                                      ),
+                                    Positioned(
+                                      top: 4,
+                                      right: 4,
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: PopupMenuButton<String>(
+                                          icon: Container(
+                                            padding: const EdgeInsets.all(4),
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .scrim
+                                                  .withValues(alpha: 0.87),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Icon(
+                                              Icons.more_vert,
+                                              size: 20,
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.onPrimary,
+                                            ),
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          onSelected: (value) {
+                                            if (value == 'share') {
+                                              _shareVideo(video);
+                                            } else if (value == 'delete') {
+                                              _showDeleteDialog(video);
+                                            }
+                                          },
+                                          itemBuilder: (context) => [
+                                            const PopupMenuItem(
+                                              value: 'share',
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.share),
+                                                  SizedBox(width: 12),
+                                                  Text('Share'),
+                                                ],
+                                              ),
+                                            ),
+                                            const PopupMenuItem(
+                                              value: 'delete',
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.delete_outline),
+                                                  SizedBox(width: 12),
+                                                  Text('Delete'),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Text(
-                              video.title,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
+                            Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Text(
+                                video.title,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                }, childCount: _userVideos.length),
+                    );
+                  },
+                ),
               ),
-            ),
-          if (isLoggedIn && _userVideos.isEmpty && !isLoading)
-            SliverPadding(
-              padding: const EdgeInsets.all(16),
-              sliver: SliverToBoxAdapter(
+            if (isLoggedIn && _userVideos.isEmpty && !isLoading)
+              Padding(
+                padding: const EdgeInsets.all(16),
                 child: Card(
                   child: Padding(
                     padding: const EdgeInsets.all(24),
@@ -778,13 +774,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
-            ),
 
-          // Liked Videos Section
-          if (isLoggedIn && _likedVideos.isNotEmpty)
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 32, 16, 16),
-              sliver: SliverToBoxAdapter(
+            // Liked Videos Section
+            if (isLoggedIn && _likedVideos.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 32, 16, 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -803,19 +797,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ],
                 ),
               ),
-            ),
-          if (isLoggedIn && _likedVideos.isNotEmpty)
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 16 / 12,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
+            if (isLoggedIn && _likedVideos.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 16 / 12,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                  ),
+                  itemCount: _likedVideos.length,
+                  itemBuilder: (context, index) {
                     final video = _likedVideos[index];
                     return Card(
                       clipBehavior: Clip.antiAlias,
@@ -836,9 +831,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: Container(
                                 width: double.infinity,
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .surfaceContainerHighest,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.surfaceContainerHighest,
                                   image: video.thumbnailUrl != null
                                       ? DecorationImage(
                                           image: NetworkImage(
@@ -855,9 +850,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         child: Icon(
                                           Icons.play_circle_outline,
                                           size: 40,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurfaceVariant,
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurfaceVariant,
                                         ),
                                       ),
                                     if (video.duration != null)
@@ -874,15 +869,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 .colorScheme
                                                 .scrim
                                                 .withValues(alpha: 0.87),
-                                            borderRadius:
-                                                BorderRadius.circular(4),
+                                            borderRadius: BorderRadius.circular(
+                                              4,
+                                            ),
                                           ),
                                           child: Text(
                                             _formatDuration(video.duration),
                                             style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onPrimary,
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.onPrimary,
                                               fontSize: 10,
                                             ),
                                           ),
@@ -909,11 +905,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     );
                   },
-                  childCount: _likedVideos.length,
                 ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -243,7 +243,9 @@ class Repository extends GetxController {
                 .map((e) => e.value)
                 .toList(),
             authorPubkey: set.pubKey,
-            createdAt: DateTime.fromMillisecondsSinceEpoch(set.createdAt * 1000),
+            createdAt: DateTime.fromMillisecondsSinceEpoch(
+              set.createdAt * 1000,
+            ),
           );
           playlists.add(playlist);
         }
@@ -325,7 +327,9 @@ class Repository extends GetxController {
     final playlist = playlists[playlistIndex];
 
     // Remove video from playlist
-    final updatedVideoIds = playlist.videoIds.where((id) => id != videoId).toList();
+    final updatedVideoIds = playlist.videoIds
+        .where((id) => id != videoId)
+        .toList();
     final updatedPlaylist = playlist.copyWith(videoIds: updatedVideoIds);
 
     final event = updatedPlaylist.toEvent(pubkey);

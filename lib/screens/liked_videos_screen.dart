@@ -22,10 +22,7 @@ class LikedVideosScreen extends StatelessWidget {
         surfaceTintColor: Colors.transparent,
         title: Row(
           children: [
-            Icon(
-              Icons.favorite,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            Icon(Icons.favorite, color: Theme.of(context).colorScheme.primary),
             const SizedBox(width: 8),
             const Text('Liked Videos'),
           ],
@@ -81,9 +78,9 @@ class LikedVideosScreen extends StatelessWidget {
                           width: 120,
                           height: 90,
                           decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .surfaceContainerHighest,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerHighest,
                             image: video.thumbnailUrl != null
                                 ? DecorationImage(
                                     image: NetworkImage(video.thumbnailUrl!),
@@ -98,9 +95,9 @@ class LikedVideosScreen extends StatelessWidget {
                                   child: Icon(
                                     Icons.play_circle_outline,
                                     size: 32,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               if (video.duration != null)
@@ -113,18 +110,16 @@ class LikedVideosScreen extends StatelessWidget {
                                       vertical: 2,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .scrim
+                                      color: Theme.of(context).colorScheme.scrim
                                           .withValues(alpha: 0.87),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: Text(
                                       _formatDuration(video.duration),
                                       style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onPrimary,
                                         fontSize: 10,
                                       ),
                                     ),
@@ -154,9 +149,9 @@ class LikedVideosScreen extends StatelessWidget {
                                     video.description,
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurfaceVariant,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
                                     ),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,

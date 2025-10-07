@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toastification/toastification.dart';
@@ -112,7 +114,10 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
 
               try {
                 // Generate dTag from name
-                final dTag = name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-');
+                final dTag = name.toLowerCase().replaceAll(
+                  RegExp(r'[^a-z0-9]+'),
+                  '-',
+                );
 
                 await _repository.createPlaylist(
                   dTag: dTag,
@@ -170,139 +175,138 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
               onPressed: _showCreatePlaylistDialog,
             ),
           const SizedBox(width: 12),
+          if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
+            const SizedBox(width: 154),
         ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : !isLoggedIn
-              ? Center(
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.login,
+                    size: 64,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Login to See Playlists',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Create and organize your video collections',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : Obx(() {
+              final playlists = _repository.playlists;
+              final hasLikedVideos = _likedVideos.isNotEmpty;
+              final totalItems = playlists.length + (hasLikedVideos ? 1 : 0);
+
+              if (!hasLikedVideos && playlists.isEmpty) {
+                return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        Icons.login,
+                        Icons.playlist_play,
                         size: 64,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Login to See Playlists',
+                        'No Playlists Yet',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Create and organize your video collections',
+                        'Create your first playlist',
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
+                      const SizedBox(height: 24),
+                      FilledButton.icon(
+                        onPressed: _showCreatePlaylistDialog,
+                        icon: const Icon(Icons.add),
+                        label: const Text('Create Playlist'),
+                      ),
                     ],
                   ),
-                )
-              : Obx(() {
-                  final playlists = _repository.playlists;
-                  final hasLikedVideos = _likedVideos.isNotEmpty;
-                  final totalItems = playlists.length + (hasLikedVideos ? 1 : 0);
+                );
+              }
 
-                  if (!hasLikedVideos && playlists.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.playlist_play,
-                            size: 64,
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: totalItems,
+                itemBuilder: (context, index) {
+                  // Show Liked Videos as first item
+                  if (index == 0 && hasLikedVideos) {
+                    return Card(
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
+                          child: Icon(
+                            Icons.favorite,
+                            color: Theme.of(context).colorScheme.onPrimary,
                           ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No Playlists Yet',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Create your first playlist',
-                            style: TextStyle(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurfaceVariant,
+                        ),
+                        title: const Text('Liked Videos'),
+                        subtitle: Text(
+                          '${_likedVideos.length} video${_likedVideos.length == 1 ? '' : 's'}',
+                        ),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  LikedVideosScreen(likedVideos: _likedVideos),
                             ),
-                          ),
-                          const SizedBox(height: 24),
-                          FilledButton.icon(
-                            onPressed: _showCreatePlaylistDialog,
-                            icon: const Icon(Icons.add),
-                            label: const Text('Create Playlist'),
-                          ),
-                        ],
+                          );
+                        },
                       ),
                     );
                   }
 
-                  return ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: totalItems,
-                    itemBuilder: (context, index) {
-                      // Show Liked Videos as first item
-                      if (index == 0 && hasLikedVideos) {
-                        return Card(
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              backgroundColor: Theme.of(context).colorScheme.primary,
-                              child: Icon(
-                                Icons.favorite,
-                                color: Theme.of(context).colorScheme.onPrimary,
-                              ),
-                            ),
-                            title: const Text('Liked Videos'),
-                            subtitle: Text(
-                              '${_likedVideos.length} video${_likedVideos.length == 1 ? '' : 's'}',
-                            ),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => LikedVideosScreen(
-                                    likedVideos: _likedVideos,
-                                  ),
-                                ),
-                              );
-                            },
+                  // Adjust index for regular playlists
+                  final playlistIndex = hasLikedVideos ? index - 1 : index;
+                  final playlist = playlists[playlistIndex];
+
+                  return Card(
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        child: Text(playlist.displayName[0].toUpperCase()),
+                      ),
+                      title: Text(playlist.displayName),
+                      subtitle: Text(
+                        '${playlist.videoIds.length} video${playlist.videoIds.length == 1 ? '' : 's'}',
+                      ),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                PlaylistDetailScreen(playlist: playlist),
                           ),
                         );
-                      }
-
-                      // Adjust index for regular playlists
-                      final playlistIndex = hasLikedVideos ? index - 1 : index;
-                      final playlist = playlists[playlistIndex];
-
-                      return Card(
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            child: Text(playlist.displayName[0].toUpperCase()),
-                          ),
-                          title: Text(playlist.displayName),
-                          subtitle: Text(
-                            '${playlist.videoIds.length} video${playlist.videoIds.length == 1 ? '' : 's'}',
-                          ),
-                          trailing: const Icon(Icons.chevron_right),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PlaylistDetailScreen(
-                                  playlist: playlist,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    },
+                      },
+                    ),
                   );
-                }),
+                },
+              );
+            }),
     );
   }
 }

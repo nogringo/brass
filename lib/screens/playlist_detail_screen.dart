@@ -28,7 +28,9 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Playlist'),
-        content: Text('Are you sure you want to delete "${widget.playlist.displayName}"?'),
+        content: Text(
+          'Are you sure you want to delete "${widget.playlist.displayName}"?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -139,9 +141,9 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                           width: 120,
                           height: 90,
                           decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .surfaceContainerHighest,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerHighest,
                             image: video.thumbnailUrl != null
                                 ? DecorationImage(
                                     image: NetworkImage(video.thumbnailUrl!),
@@ -156,9 +158,9 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                                   child: Icon(
                                     Icons.play_circle_outline,
                                     size: 32,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               if (video.duration != null)
@@ -171,18 +173,16 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                                       vertical: 2,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .scrim
+                                      color: Theme.of(context).colorScheme.scrim
                                           .withValues(alpha: 0.87),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: Text(
                                       _formatDuration(video.duration),
                                       style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onPrimary,
                                         fontSize: 10,
                                       ),
                                     ),
@@ -212,9 +212,9 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                                     video.description,
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurfaceVariant,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
                                     ),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
@@ -237,7 +237,9 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                                 toastification.show(
                                   context: context,
                                   type: ToastificationType.success,
-                                  title: const Text('Video removed from playlist'),
+                                  title: const Text(
+                                    'Video removed from playlist',
+                                  ),
                                   alignment: Alignment.bottomRight,
                                   autoCloseDuration: const Duration(seconds: 2),
                                 );
