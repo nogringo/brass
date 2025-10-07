@@ -5,9 +5,11 @@ import 'package:ndk/ndk.dart';
 import 'package:nostr_widgets/functions/n_save_accounts_state.dart';
 import 'package:toastification/toastification.dart';
 import '../repository.dart';
+import '../models/nostr_video.dart';
 import 'login_screen.dart';
 import 'settings/blossom_settings_screen.dart';
 import 'upload_video/upload_video_screen.dart';
+import 'video_player/video_player_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -18,10 +20,12 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final ndk = Repository.ndk;
+  final Repository _repository = Repository.to;
   Metadata? userMetadata;
   bool isLoading = true;
   NwcConnection? nwcConnection;
   bool isConnectingWallet = false;
+  List<NostrVideo> _userVideos = [];
 
   @override
   void initState() {
@@ -36,8 +40,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final metadata = await ndk.metadata.loadMetadata(pubkey);
         setState(() {
           userMetadata = metadata;
-          isLoading = false;
         });
+        // Load user's videos
+        _loadUserVideos(pubkey);
       } catch (e) {
         setState(() {
           isLoading = false;
@@ -48,6 +53,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
         isLoading = false;
       });
     }
+  }
+
+  Future<void> _loadUserVideos(String pubkey) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      await _repository.fetchVideoEvents(limit: 100);
+      final videos = _repository.getChannelVideos(pubkey);
+      setState(() {
+        _userVideos = videos;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  String _formatDuration(int? seconds) {
+    if (seconds == null) return '';
+    final minutes = seconds ~/ 60;
+    final remainingSeconds = seconds % 60;
+    return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
   Future<void> _connectWallet() async {
@@ -417,6 +448,170 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ),
+          if (isLoggedIn && _userVideos.isNotEmpty)
+            SliverPadding(
+              padding: const EdgeInsets.all(16),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'My Videos',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${_userVideos.length} video${_userVideos.length == 1 ? '' : 's'}',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
+            ),
+          if (isLoggedIn && _userVideos.isNotEmpty)
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 16 / 12,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final video = _userVideos[index];
+                    return Card(
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  VideoPlayerScreen(video: video),
+                            ),
+                          );
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Container(
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainerHighest,
+                                  image: video.thumbnailUrl != null
+                                      ? DecorationImage(
+                                          image: NetworkImage(
+                                            video.thumbnailUrl!,
+                                          ),
+                                          fit: BoxFit.cover,
+                                        )
+                                      : null,
+                                ),
+                                child: Stack(
+                                  children: [
+                                    if (video.thumbnailUrl == null)
+                                      Center(
+                                        child: Icon(
+                                          Icons.play_circle_outline,
+                                          size: 40,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant,
+                                        ),
+                                      ),
+                                    if (video.duration != null)
+                                      Positioned(
+                                        bottom: 4,
+                                        right: 4,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 4,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .scrim
+                                                .withValues(alpha: 0.87),
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                          ),
+                                          child: Text(
+                                            _formatDuration(video.duration),
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimary,
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Text(
+                                video.title,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  childCount: _userVideos.length,
+                ),
+              ),
+            ),
+          if (isLoggedIn && _userVideos.isEmpty && !isLoading)
+            SliverPadding(
+              padding: const EdgeInsets.all(16),
+              sliver: SliverToBoxAdapter(
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.video_library_outlined,
+                          size: 48,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No videos yet',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Upload your first video to get started',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
