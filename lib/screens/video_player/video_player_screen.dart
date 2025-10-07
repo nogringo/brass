@@ -8,7 +8,7 @@ import 'package:ndk/entities.dart';
 import 'package:ndk/ndk.dart';
 import 'package:toastification/toastification.dart';
 import '../../repository.dart';
-import '../channel_screen.dart';
+import '../channel/channel_screen.dart';
 import '../login_screen.dart';
 import 'widgets/video_metadata.dart';
 import 'widgets/video_action_buttons.dart';

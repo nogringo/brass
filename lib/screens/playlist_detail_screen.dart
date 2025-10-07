@@ -228,34 +228,33 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                         IconButton(
                           icon: const Icon(Icons.close),
                           onPressed: () async {
+                            final navigator = Navigator.of(context);
                             try {
                               await _repository.removeVideoFromPlaylist(
                                 widget.playlist.dTag,
                                 video.id,
                               );
-                              if (mounted) {
-                                toastification.show(
-                                  context: context,
-                                  type: ToastificationType.success,
-                                  title: const Text(
-                                    'Video removed from playlist',
-                                  ),
-                                  alignment: Alignment.bottomRight,
-                                  autoCloseDuration: const Duration(seconds: 2),
-                                );
-                                setState(() {});
-                              }
+                              if (!mounted) return;
+                              toastification.show(
+                                context: navigator.context,
+                                type: ToastificationType.success,
+                                title: const Text(
+                                  'Video removed from playlist',
+                                ),
+                                alignment: Alignment.bottomRight,
+                                autoCloseDuration: const Duration(seconds: 2),
+                              );
+                              setState(() {});
                             } catch (e) {
-                              if (mounted) {
-                                toastification.show(
-                                  context: context,
-                                  type: ToastificationType.error,
-                                  title: const Text('Failed to remove video'),
-                                  description: Text(e.toString()),
-                                  alignment: Alignment.bottomRight,
-                                  autoCloseDuration: const Duration(seconds: 3),
-                                );
-                              }
+                              if (!mounted) return;
+                              toastification.show(
+                                context: navigator.context,
+                                type: ToastificationType.error,
+                                title: const Text('Failed to remove video'),
+                                description: Text(e.toString()),
+                                alignment: Alignment.bottomRight,
+                                autoCloseDuration: const Duration(seconds: 3),
+                              );
                             }
                           },
                         ),

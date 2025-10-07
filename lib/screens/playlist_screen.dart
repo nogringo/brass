@@ -110,7 +110,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                 return;
               }
 
-              Navigator.pop(context);
+              final navigator = Navigator.of(context);
+              navigator.pop();
 
               try {
                 // Generate dTag from name
@@ -129,7 +130,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
 
                 if (mounted) {
                   toastification.show(
-                    context: context,
+                    context: navigator.context,
                     type: ToastificationType.success,
                     title: const Text('Playlist created'),
                     alignment: Alignment.bottomRight,
@@ -139,7 +140,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
               } catch (e) {
                 if (mounted) {
                   toastification.show(
-                    context: context,
+                    context: navigator.context,
                     type: ToastificationType.error,
                     title: const Text('Failed to create playlist'),
                     description: Text(e.toString()),

@@ -7,7 +7,7 @@ import 'package:ndk/entities.dart';
 import 'package:audio_service/audio_service.dart';
 import '../../models/nostr_video.dart';
 import '../../repository.dart';
-import '../channel_screen.dart';
+import '../channel/channel_screen.dart';
 import '../login_screen.dart';
 
 class ShortVideosController extends GetxController {
