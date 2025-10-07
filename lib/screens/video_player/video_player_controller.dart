@@ -314,10 +314,7 @@ class VideoPlayerController extends GetxController {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Share Video',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            Text('Share Video', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 16),
             ListTile(
               leading: const Icon(Icons.link),

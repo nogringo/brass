@@ -3,10 +3,10 @@ import 'dart:typed_data';
 import 'package:bech32/bech32.dart';
 
 enum TLVType {
-  special(0),  // 32 bytes of the event id
-  relay(1),    // relay URL where event is likely to be found
-  author(2),   // 32 bytes of the pubkey of the event
-  kind(3);     // 32-bit unsigned integer of the kind, big-endian
+  special(0), // 32 bytes of the event id
+  relay(1), // relay URL where event is likely to be found
+  author(2), // 32 bytes of the pubkey of the event
+  kind(3); // 32-bit unsigned integer of the kind, big-endian
 
   final int value;
   const TLVType(this.value);
@@ -18,12 +18,7 @@ class Nevent {
   final String? author;
   final int? kind;
 
-  Nevent({
-    required this.eventId,
-    this.relays,
-    this.author,
-    this.kind,
-  });
+  Nevent({required this.eventId, this.relays, this.author, this.kind});
 
   Map<String, dynamic> toJson() => {
     'event_id': eventId,
@@ -36,7 +31,9 @@ class Nevent {
 class NeventCodec {
   static Uint8List _encodeTLV(int type, Uint8List value) {
     if (value.length > 255) {
-      throw ArgumentError('TLV value too long: ${value.length} bytes (max 255)');
+      throw ArgumentError(
+        'TLV value too long: ${value.length} bytes (max 255)',
+      );
     }
     final result = Uint8List(2 + value.length);
     result[0] = type;
@@ -48,20 +45,20 @@ class NeventCodec {
   static List<(int, Uint8List)> _decodeTLV(Uint8List data) {
     final tlvList = <(int, Uint8List)>[];
     int i = 0;
-    
+
     while (i < data.length) {
       if (i + 1 >= data.length) break;
-      
+
       final type = data[i];
       final length = data[i + 1];
-      
+
       if (i + 2 + length > data.length) break;
-      
+
       final value = Uint8List.sublistView(data, i + 2, i + 2 + length);
       tlvList.add((type, value));
       i += 2 + length;
     }
-    
+
     return tlvList;
   }
 
@@ -69,7 +66,7 @@ class NeventCodec {
     if (hex.length % 2 != 0) {
       throw ArgumentError('Invalid hex string');
     }
-    
+
     final bytes = Uint8List(hex.length ~/ 2);
     for (int i = 0; i < hex.length; i += 2) {
       bytes[i ~/ 2] = int.parse(hex.substring(i, i + 2), radix: 16);
@@ -97,7 +94,12 @@ class NeventCodec {
     return (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
   }
 
-  static List<int>? _convertBits(List<int> data, int fromBits, int toBits, bool pad) {
+  static List<int>? _convertBits(
+    List<int> data,
+    int fromBits,
+    int toBits,
+    bool pad,
+  ) {
     int acc = 0;
     int bits = 0;
     final ret = <int>[];
@@ -128,7 +130,7 @@ class NeventCodec {
   }
 
   static const _charset = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
-  
+
   static List<int> _expandHrp(String hrp) {
     final expanded = <int>[];
     for (int i = 0; i < hrp.length; i++) {
@@ -140,9 +142,15 @@ class NeventCodec {
     }
     return expanded;
   }
-  
+
   static int _polymod(List<int> values) {
-    const generator = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3];
+    const generator = [
+      0x3b6a57b2,
+      0x26508e6d,
+      0x1ea119fa,
+      0x3d4233dd,
+      0x2a1462b3,
+    ];
     int chk = 1;
     for (final value in values) {
       final top = chk >> 25;
@@ -153,7 +161,7 @@ class NeventCodec {
     }
     return chk;
   }
-  
+
   static List<int> _createChecksum(String hrp, List<int> data) {
     final values = _expandHrp(hrp) + data + [0, 0, 0, 0, 0, 0];
     final polyMod = _polymod(values) ^ 1;
@@ -166,15 +174,17 @@ class NeventCodec {
 
   static String encode(Nevent nevent) {
     if (nevent.eventId.length != 64) {
-      throw ArgumentError('Event ID must be 64 hex chars, got ${nevent.eventId.length}');
+      throw ArgumentError(
+        'Event ID must be 64 hex chars, got ${nevent.eventId.length}',
+      );
     }
 
     final tlvData = <int>[];
-    
+
     // Add event ID (required, type 0)
     final eventBytes = _hexToBytes(nevent.eventId);
     tlvData.addAll(_encodeTLV(TLVType.special.value, eventBytes));
-    
+
     // Add relays (optional, type 1)
     if (nevent.relays != null) {
       for (final relay in nevent.relays!) {
@@ -182,35 +192,37 @@ class NeventCodec {
         tlvData.addAll(_encodeTLV(TLVType.relay.value, relayBytes));
       }
     }
-    
+
     // Add author pubkey (optional, type 2)
     if (nevent.author != null) {
       if (nevent.author!.length != 64) {
-        throw ArgumentError('Author pubkey must be 64 hex chars, got ${nevent.author!.length}');
+        throw ArgumentError(
+          'Author pubkey must be 64 hex chars, got ${nevent.author!.length}',
+        );
       }
       final authorBytes = _hexToBytes(nevent.author!);
       tlvData.addAll(_encodeTLV(TLVType.author.value, authorBytes));
     }
-    
+
     // Add kind (optional, type 3)
     if (nevent.kind != null) {
       final kindBytes = _intToBytes(nevent.kind!);
       tlvData.addAll(_encodeTLV(TLVType.kind.value, kindBytes));
     }
-    
+
     // Convert to bech32
     final tlvBytes = Uint8List.fromList(tlvData);
     final converted = _convertBits(tlvBytes, 8, 5, true);
     if (converted == null) {
       throw ArgumentError('Failed to convert to bech32 format');
     }
-    
+
     // Manual bech32 encoding to support longer strings
     final hrp = 'nevent';
     final data = Uint8List.fromList(converted);
     final checksum = _createChecksum(hrp, data);
     final combined = data + checksum;
-    
+
     final result = StringBuffer(hrp);
     result.write('1');
     for (final value in combined) {
@@ -223,26 +235,28 @@ class NeventCodec {
     // Decode bech32
     final codec = Bech32Codec();
     final bech32 = codec.decode(neventStr, neventStr.length);
-    
+
     if (bech32.hrp != 'nevent') {
-      throw ArgumentError("Invalid HRP: expected 'nevent', got '${bech32.hrp}'");
+      throw ArgumentError(
+        "Invalid HRP: expected 'nevent', got '${bech32.hrp}'",
+      );
     }
-    
+
     // Convert from 5-bit to 8-bit
     final converted = _convertBits(bech32.data, 5, 8, false);
     if (converted == null) {
       throw ArgumentError('Failed to convert from bech32 format');
     }
-    
+
     // Decode TLV fields
     final tlvList = _decodeTLV(Uint8List.fromList(converted));
-    
+
     // Parse TLV fields
     String? eventId;
     List<String> relays = [];
     String? author;
     int? kind;
-    
+
     for (final (type, value) in tlvList) {
       switch (type) {
         case 0: // TLVType.special
@@ -273,11 +287,11 @@ class NeventCodec {
           break;
       }
     }
-    
+
     if (eventId == null) {
       throw ArgumentError('Missing required event_id field');
     }
-    
+
     return Nevent(
       eventId: eventId,
       relays: relays.isEmpty ? null : relays,

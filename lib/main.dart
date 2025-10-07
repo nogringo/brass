@@ -39,7 +39,9 @@ void main() async {
 
   final ndk = Ndk(
     NdkConfig(
-      eventVerifier: kIsWeb ? NoEventVerifier() : RustEventVerifier(),
+      eventVerifier: (kIsWeb && kDebugMode)
+          ? NoEventVerifier()
+          : RustEventVerifier(),
       cache: cacheManager,
     ),
   );
