@@ -83,8 +83,11 @@ class UploadVideoController extends GetxController {
       );
 
       if (uploadResults.isNotEmpty) {
-        // Return the first result as string
-        return uploadResults.first.toString();
+        // Extract URL from BlobUploadResult
+        final result = uploadResults.first;
+        if (result.success && result.descriptor != null) {
+          return result.descriptor!.url;
+        }
       }
       return null;
     } catch (e) {
@@ -119,7 +122,10 @@ class UploadVideoController extends GetxController {
       );
 
       if (uploadResults.isNotEmpty) {
-        return uploadResults.first.toString();
+        final result = uploadResults.first;
+        if (result.success && result.descriptor != null) {
+          return result.descriptor!.url;
+        }
       }
       return null;
     } catch (e) {
