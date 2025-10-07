@@ -134,7 +134,11 @@ class VideoPlayerController extends GetxController {
     final myPubkey = ndk.accounts.getPublicKey();
 
     if (myPubkey == null) {
-      Get.to(() => const LoginScreen());
+      final result = await Get.to(() => const LoginScreen());
+      if (result == true) {
+        await _checkIfFollowing();
+        update();
+      }
       return;
     }
 
@@ -214,7 +218,10 @@ class VideoPlayerController extends GetxController {
     final pubkey = ndk.accounts.getPublicKey();
 
     if (pubkey == null) {
-      Get.to(() => const LoginScreen());
+      final result = await Get.to(() => const LoginScreen());
+      if (result == true) {
+        update();
+      }
       return;
     }
 
@@ -260,7 +267,10 @@ class VideoPlayerController extends GetxController {
     final pubkey = ndk.accounts.getPublicKey();
 
     if (pubkey == null) {
-      Get.to(() => const LoginScreen());
+      final result = await Get.to(() => const LoginScreen());
+      if (result == true) {
+        update();
+      }
       return;
     }
 

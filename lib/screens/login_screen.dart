@@ -25,7 +25,7 @@ class LoginScreen extends StatelessWidget {
               child: NLogin(
                 ndk: ndk,
                 onLoggedIn: () {
-                  Get.back();
+                  Get.back(result: true);
                 },
                 enablePubkeyLogin: false,
                 nsecLabelText: "Private Key",

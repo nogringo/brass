@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:ndk/ndk.dart';
 import 'package:nostr_widgets/functions/n_save_accounts_state.dart';
 import 'package:toastification/toastification.dart';
 import '../repository.dart';
 import '../models/nostr_video.dart';
 import '../routes/app_navigation.dart';
+import '../routes/app_routes.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -411,8 +413,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   if (!isLoggedIn)
                     FilledButton.icon(
                       onPressed: () async {
-                        AppNavigation.toLogin();
-                        _loadUserData();
+                        final result = await Get.toNamed(AppRoutes.login);
+                        if (result == true) {
+                          _loadUserData();
+                        }
                       },
                       icon: const Icon(Icons.login),
                       label: const Text('Login with Nostr'),

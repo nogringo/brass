@@ -200,12 +200,15 @@ class ShortVideosController extends GetxController {
     Get.to(() => ChannelScreen(pubkey: currentVideo!.authorPubkey));
   }
 
-  void onSubscribeTap() {
+  void onSubscribeTap() async {
     final ndk = Repository.ndk;
     final pubkey = ndk.accounts.getPublicKey();
 
     if (pubkey == null) {
-      Get.to(() => const LoginScreen());
+      final result = await Get.to(() => const LoginScreen());
+      if (result == true) {
+        update();
+      }
       return;
     }
 
@@ -219,7 +222,10 @@ class ShortVideosController extends GetxController {
     final pubkey = ndk.accounts.getPublicKey();
 
     if (pubkey == null) {
-      Get.to(() => const LoginScreen());
+      final result = await Get.to(() => const LoginScreen());
+      if (result == true) {
+        update();
+      }
       return;
     }
 
@@ -265,7 +271,10 @@ class ShortVideosController extends GetxController {
     final pubkey = ndk.accounts.getPublicKey();
 
     if (pubkey == null) {
-      Get.to(() => const LoginScreen());
+      final result = await Get.to(() => const LoginScreen());
+      if (result == true) {
+        update();
+      }
       return;
     }
 
