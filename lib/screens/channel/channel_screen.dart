@@ -121,6 +121,33 @@ class ChannelScreen extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
+                  const SizedBox(height: 16),
+                  Obx(
+                    () => SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        onPressed: controller.toggleSubscribe,
+                        icon: Icon(
+                          controller.isSubscribed.value
+                              ? Icons.notifications_active
+                              : Icons.notifications_outlined,
+                        ),
+                        label: Text(
+                          controller.isSubscribed.value
+                              ? 'Subscribed'
+                              : 'Subscribe',
+                        ),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: controller.isSubscribed.value
+                              ? Theme.of(context).colorScheme.surfaceContainerHighest
+                              : Theme.of(context).colorScheme.primary,
+                          foregroundColor: controller.isSubscribed.value
+                              ? Theme.of(context).colorScheme.onSurface
+                              : Theme.of(context).colorScheme.onPrimary,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
