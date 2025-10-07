@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'blossom_settings_controller.dart';
@@ -24,6 +26,8 @@ class BlossomSettingsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
+          if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
+            SizedBox(width: 154),
         ],
       ),
       body: Obx(

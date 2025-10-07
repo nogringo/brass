@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -267,6 +269,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
               SizedBox(width: 12),
+              if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
+                SizedBox(width: 154),
             ],
           ),
           SliverToBoxAdapter(
@@ -481,103 +485,101 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8,
                 ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final video = _userVideos[index];
-                    return Card(
-                      clipBehavior: Clip.antiAlias,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  VideoPlayerScreen(video: video),
-                            ),
-                          );
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .surfaceContainerHighest,
-                                  image: video.thumbnailUrl != null
-                                      ? DecorationImage(
-                                          image: NetworkImage(
-                                            video.thumbnailUrl!,
-                                          ),
-                                          fit: BoxFit.cover,
-                                        )
-                                      : null,
-                                ),
-                                child: Stack(
-                                  children: [
-                                    if (video.thumbnailUrl == null)
-                                      Center(
-                                        child: Icon(
-                                          Icons.play_circle_outline,
-                                          size: 40,
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final video = _userVideos[index];
+                  return Card(
+                    clipBehavior: Clip.antiAlias,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                VideoPlayerScreen(video: video),
+                          ),
+                        );
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.surfaceContainerHighest,
+                                image: video.thumbnailUrl != null
+                                    ? DecorationImage(
+                                        image: NetworkImage(
+                                          video.thumbnailUrl!,
+                                        ),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : null,
+                              ),
+                              child: Stack(
+                                children: [
+                                  if (video.thumbnailUrl == null)
+                                    Center(
+                                      child: Icon(
+                                        Icons.play_circle_outline,
+                                        size: 40,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  if (video.duration != null)
+                                    Positioned(
+                                      bottom: 4,
+                                      right: 4,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4,
+                                          vertical: 2,
+                                        ),
+                                        decoration: BoxDecoration(
                                           color: Theme.of(context)
                                               .colorScheme
-                                              .onSurfaceVariant,
+                                              .scrim
+                                              .withValues(alpha: 0.87),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
                                         ),
-                                      ),
-                                    if (video.duration != null)
-                                      Positioned(
-                                        bottom: 4,
-                                        right: 4,
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 4,
-                                            vertical: 2,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .scrim
-                                                .withValues(alpha: 0.87),
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                          ),
-                                          child: Text(
-                                            _formatDuration(video.duration),
-                                            style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onPrimary,
-                                              fontSize: 10,
-                                            ),
+                                        child: Text(
+                                          _formatDuration(video.duration),
+                                          style: TextStyle(
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onPrimary,
+                                            fontSize: 10,
                                           ),
                                         ),
                                       ),
-                                  ],
-                                ),
+                                    ),
+                                ],
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                video.title,
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Text(
+                              video.title,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
                               ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                  childCount: _userVideos.length,
-                ),
+                    ),
+                  );
+                }, childCount: _userVideos.length),
               ),
             ),
           if (isLoggedIn && _userVideos.isEmpty && !isLoading)
@@ -603,7 +605,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Text(
                           'Upload your first video to get started',
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],

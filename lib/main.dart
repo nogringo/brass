@@ -69,6 +69,38 @@ class MainApp extends StatelessWidget {
           ),
         ),
         home: const HomeScreen(),
+        builder: (context, child) {
+          if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+            return DragToResizeArea(
+              child: Stack(
+                children: [
+                  child!,
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: SizedBox(
+                      height: 32,
+                      child: Row(
+                        children: [
+                          Expanded(child: DragToMoveArea(child: Container())),
+                          SizedBox(
+                            width: 154,
+                            child: WindowCaption(
+                              brightness: Theme.of(context).brightness,
+                              backgroundColor: Colors.transparent,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+          return child!;
+        },
       ),
     );
   }
