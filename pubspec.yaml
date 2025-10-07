@@ -19,6 +19,10 @@ dependencies:
   ndk: ^0.5.1
   ndk_rust_verifier: ^0.4.1
   nostr_widgets: ^1.1.0
+  path: ^1.9.1
+  path_provider: ^2.1.5
+  sembast: ^3.8.5+1
+  sembast_cache_manager: ^1.0.3
   toastification: ^3.0.3
 
 dev_dependencies:

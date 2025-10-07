@@ -1,9 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:ndk/ndk.dart';
 import 'package:ndk_rust_verifier/data_layer/repositories/verifiers/rust_event_verifier.dart';
 import 'package:nostr_widgets/functions/functions.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:sembast/sembast_io.dart';
+import 'package:sembast_cache_manager/sembast_cache_manager.dart';
 import 'package:toastification/toastification.dart';
 import 'repository.dart';
 import 'screens/home_screen.dart';
@@ -13,8 +19,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
 
+  final docDir = await getApplicationDocumentsDirectory();
+  final dbPath = p.join(docDir.path, 'Brass/ndk-cache.db');
+  await Directory(p.dirname(dbPath)).create(recursive: true);
+  final db = await databaseFactoryIo.openDatabase(dbPath);
+  final cacheManager = SembastCacheManager(db);
+
   final ndk = Ndk(
-    NdkConfig(eventVerifier: RustEventVerifier(), cache: MemCacheManager()),
+    NdkConfig(eventVerifier: RustEventVerifier(), cache: cacheManager),
   );
   await nRestoreAccounts(ndk);
   Get.put(ndk);
