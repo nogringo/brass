@@ -1,6 +1,7 @@
 import 'package:brass/screens/short_videos/short_videos_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'playlist_screen.dart';
 import 'video_list_screen.dart';
 import 'profile_screen.dart';
 import 'short_videos/short_videos_controller.dart';
@@ -18,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
     const VideoListScreen(videoType: VideoType.long),
     const ShortVideosScreen(),
+    const PlaylistScreen(),
     const ProfileScreen(),
   ];
 
@@ -66,6 +68,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   label: Text('Shorts'),
                 ),
                 NavigationRailDestination(
+                  icon: Icon(Icons.playlist_play_outlined),
+                  selectedIcon: Icon(Icons.playlist_play),
+                  label: Text('Playlists'),
+                ),
+                NavigationRailDestination(
                   icon: Icon(Icons.person_outline),
                   selectedIcon: Icon(Icons.person),
                   label: Text('Profile'),
@@ -92,6 +99,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   icon: Icon(Icons.movie_outlined),
                   selectedIcon: Icon(Icons.movie),
                   label: 'Shorts',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.playlist_play_outlined),
+                  selectedIcon: Icon(Icons.playlist_play),
+                  label: 'Playlists',
                 ),
                 NavigationDestination(
                   icon: Icon(Icons.person_outline),

@@ -29,6 +29,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   NwcConnection? nwcConnection;
   bool isConnectingWallet = false;
   List<NostrVideo> _userVideos = [];
+  List<NostrVideo> _likedVideos = [];
 
   @override
   void initState() {
@@ -44,8 +45,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         setState(() {
           userMetadata = metadata;
         });
-        // Load user's videos
+        // Load user's videos and liked videos
         _loadUserVideos(pubkey);
+        _loadLikedVideos(pubkey);
       } catch (e) {
         setState(() {
           isLoading = false;
@@ -74,6 +76,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() {
         isLoading = false;
       });
+    }
+  }
+
+  Future<void> _loadLikedVideos(String pubkey) async {
+    try {
+      final likedVideos = await _repository.fetchLikedVideos(pubkey);
+      setState(() {
+        _likedVideos = likedVideos;
+      });
+    } catch (e) {
+      // Failed to load liked videos
     }
   }
 
@@ -614,6 +627,140 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                   ),
+                ),
+              ),
+            ),
+
+          // Liked Videos Section
+          if (isLoggedIn && _likedVideos.isNotEmpty)
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(16, 32, 16, 16),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Liked Videos',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${_likedVideos.length} video${_likedVideos.length == 1 ? '' : 's'}',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
+            ),
+          if (isLoggedIn && _likedVideos.isNotEmpty)
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 16 / 12,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final video = _likedVideos[index];
+                    return Card(
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  VideoPlayerScreen(video: video),
+                            ),
+                          );
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Container(
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainerHighest,
+                                  image: video.thumbnailUrl != null
+                                      ? DecorationImage(
+                                          image: NetworkImage(
+                                            video.thumbnailUrl!,
+                                          ),
+                                          fit: BoxFit.cover,
+                                        )
+                                      : null,
+                                ),
+                                child: Stack(
+                                  children: [
+                                    if (video.thumbnailUrl == null)
+                                      Center(
+                                        child: Icon(
+                                          Icons.play_circle_outline,
+                                          size: 40,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant,
+                                        ),
+                                      ),
+                                    if (video.duration != null)
+                                      Positioned(
+                                        bottom: 4,
+                                        right: 4,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 4,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .scrim
+                                                .withValues(alpha: 0.87),
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                          ),
+                                          child: Text(
+                                            _formatDuration(video.duration),
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimary,
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Text(
+                                video.title,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  childCount: _likedVideos.length,
                 ),
               ),
             ),
