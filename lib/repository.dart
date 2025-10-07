@@ -386,4 +386,55 @@ class Repository extends GetxController {
     shortsVideos.removeWhere((v) => v.id == videoId);
     update();
   }
+
+  Future<NostrVideo?> fetchVideoById(String videoId) async {
+    // Check local cache first
+    final allVideos = [...normalVideos, ...shortsVideos];
+    final cachedVideo = allVideos.firstWhereOrNull((v) => v.id == videoId);
+    if (cachedVideo != null) return cachedVideo;
+
+    // Fetch from network
+    try {
+      final response = ndk.requests.query(
+        filters: [
+          Filter(
+            kinds: [21, 22],
+            ids: [videoId],
+          ),
+        ],
+      );
+
+      await for (final event in response.stream) {
+        final video = NostrVideo.fromEvent(event);
+
+        // Cache the video
+        if (event.kind == 21) {
+          normalVideos.add(video);
+        } else if (event.kind == 22) {
+          shortsVideos.add(video);
+        }
+
+        // Fetch metadata for video author
+        if (!usersMetadata.containsKey(event.pubKey)) {
+          try {
+            final metadata = await ndk.metadata.loadMetadata(event.pubKey);
+            usersMetadata[event.pubKey] = metadata;
+          } catch (e) {
+            if (kDebugMode) {
+              print('Error loading metadata for ${event.pubKey}: $e');
+            }
+          }
+        }
+
+        update();
+        return video;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching video by ID: $e');
+      }
+    }
+
+    return null;
+  }
 }

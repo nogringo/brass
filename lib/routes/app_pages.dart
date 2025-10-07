@@ -16,6 +16,8 @@ import '../screens/settings/theme_settings_screen.dart';
 import '../screens/settings/blossom_settings_screen.dart';
 import '../models/nostr_video.dart';
 import '../models/playlist.dart';
+import '../repository.dart';
+import '../utils/nevent.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -32,13 +34,50 @@ class AppPages {
         }
 
         // Get video ID from route parameters (when accessing via URL)
-        final videoId = Get.parameters['id'];
+        String? videoId = Get.parameters['id'];
         if (videoId != null) {
-          // TODO: Fetch video by ID from repository
-          // For now, show error or loading screen
-          return Scaffold(
-            appBar: AppBar(title: const Text('Video')),
-            body: Center(child: Text('Loading video: $videoId')),
+          // Decode nevent if needed
+          if (videoId.startsWith('nevent')) {
+            try {
+              final nevent = NeventCodec.decode(videoId);
+              videoId = nevent.eventId;
+            } catch (e) {
+              return Scaffold(
+                appBar: AppBar(title: const Text('Error')),
+                body: Center(child: Text('Invalid nevent format: $e')),
+              );
+            }
+          }
+
+          return FutureBuilder<NostrVideo?>(
+            future: Repository.to.fetchVideoById(videoId),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Scaffold(
+                  appBar: AppBar(title: const Text('Video')),
+                  body: const Center(child: CircularProgressIndicator()),
+                );
+              }
+
+              if (snapshot.hasError) {
+                return Scaffold(
+                  appBar: AppBar(title: const Text('Error')),
+                  body: Center(
+                    child: Text('Error loading video: ${snapshot.error}'),
+                  ),
+                );
+              }
+
+              final video = snapshot.data;
+              if (video == null) {
+                return Scaffold(
+                  appBar: AppBar(title: const Text('Not Found')),
+                  body: const Center(child: Text('Video not found')),
+                );
+              }
+
+              return VideoPlayerScreen(video: video);
+            },
           );
         }
 
