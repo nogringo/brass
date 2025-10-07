@@ -10,6 +10,7 @@ import '../repository.dart';
 import '../models/nostr_video.dart';
 import 'login_screen.dart';
 import 'settings/blossom_settings_screen.dart';
+import 'settings/theme_settings_screen.dart';
 import 'upload_video/upload_video_screen.dart';
 import 'video_player/video_player_screen.dart';
 
@@ -425,13 +426,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Icons.settings,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
-                    title: const Text('Settings'),
+                    title: const Text('Theme Settings'),
                     trailing: Icon(
                       Icons.chevron_right,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     onTap: () {
-                      // TODO: Navigate to settings
+                      Get.to(() => const ThemeSettingsScreen());
                     },
                   ),
                   ListTile(
