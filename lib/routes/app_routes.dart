@@ -1,9 +1,9 @@
 class AppRoutes {
   static const String home = '/';
   static const String login = '/login';
-  static const String videoPlayer = '/video-player';
+  static const String videoPlayer = '/video/:id';
   static const String shortVideos = '/short-videos';
-  static const String channel = '/channel';
+  static const String channel = '/channel/:pubkey';
   static const String uploadVideo = '/upload-video';
   static const String videoList = '/video-list';
   static const String likedVideos = '/liked-videos';

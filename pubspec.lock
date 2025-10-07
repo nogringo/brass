@@ -598,7 +598,7 @@ packages:
     source: hosted
     version: "1.0.2"
   nip19:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: nip19
       sha256: "0bd8f866f0db72feeb60fd074169e850398983d2a67b76eef772e75d99bc53b8"

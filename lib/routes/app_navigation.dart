@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:nip19/nip19.dart';
 import '../models/nostr_video.dart';
 import '../models/playlist.dart';
 import '../screens/video_list_screen.dart';
@@ -14,7 +15,7 @@ class AppNavigation {
   }
 
   static void toVideoPlayer(NostrVideo video) {
-    Get.toNamed(AppRoutes.videoPlayer, arguments: video);
+    Get.toNamed('/video/${video.id}', arguments: video);
   }
 
   static void toShortVideos() {
@@ -22,7 +23,8 @@ class AppNavigation {
   }
 
   static void toChannel(String pubkey) {
-    Get.toNamed(AppRoutes.channel, arguments: pubkey);
+    final npub = Nip19.npubFromHex(pubkey);
+    Get.toNamed('/channel/$npub', arguments: pubkey);
   }
 
   static void toUploadVideo() {
