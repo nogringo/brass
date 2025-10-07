@@ -468,29 +468,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.event),
-              title: const Text('Event ID (nevent)'),
-              subtitle: Text(
-                _getNevent(),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              trailing: IconButton(
-                icon: const Icon(Icons.copy),
-                onPressed: () {
-                  Clipboard.setData(ClipboardData(text: _getNevent()));
-                  toastification.show(
-                    context: context,
-                    type: ToastificationType.success,
-                    title: const Text('Event ID copied to clipboard'),
-                    alignment: Alignment.bottomRight,
-                    autoCloseDuration: const Duration(seconds: 2),
-                  );
-                  Navigator.pop(context);
-                },
-              ),
-            ),
-            ListTile(
               leading: const Icon(Icons.open_in_browser),
               title: const Text('App Link'),
               subtitle: Text(
@@ -506,6 +483,29 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     context: context,
                     type: ToastificationType.success,
                     title: const Text('App link copied to clipboard'),
+                    alignment: Alignment.bottomRight,
+                    autoCloseDuration: const Duration(seconds: 2),
+                  );
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.event),
+              title: const Text('Event ID'),
+              subtitle: Text(
+                _getNevent(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: IconButton(
+                icon: const Icon(Icons.copy),
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: _getNevent()));
+                  toastification.show(
+                    context: context,
+                    type: ToastificationType.success,
+                    title: const Text('Event ID copied to clipboard'),
                     alignment: Alignment.bottomRight,
                     autoCloseDuration: const Duration(seconds: 2),
                   );
