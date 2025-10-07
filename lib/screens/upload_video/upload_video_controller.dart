@@ -64,7 +64,6 @@ class UploadVideoController extends GetxController {
     selectedFile.value = null;
   }
 
-
   Future<String?> uploadVideoToBlossom() async {
     if (selectedFile.value == null || selectedFile.value!.path == null) {
       return null;
@@ -137,5 +136,4 @@ class UploadVideoController extends GetxController {
       return null;
     }
   }
-
 }

@@ -110,9 +110,11 @@ class _VideoDetailsFormViewState extends State<VideoDetailsFormView> {
                       }
                     },
                     icon: const Icon(Icons.image, size: 18),
-                    label: Text(widget.thumbnailUrlController.text.isEmpty
-                        ? 'Select Thumbnail'
-                        : 'Change Thumbnail'),
+                    label: Text(
+                      widget.thumbnailUrlController.text.isEmpty
+                          ? 'Select Thumbnail'
+                          : 'Change Thumbnail',
+                    ),
                   ),
                 ],
               ),

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:ndk/ndk.dart';
 import 'package:nostr_widgets/functions/n_save_accounts_state.dart';
 import 'package:toastification/toastification.dart';
 import '../repository.dart';
 import 'login_screen.dart';
+import 'settings/blossom_settings_screen.dart';
 import 'upload_video/upload_video_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -360,6 +362,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onTap: nwcConnection == null && !isConnectingWallet
                           ? _connectWallet
                           : null,
+                    ),
+                    Divider(
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                    ),
+                    ListTile(
+                      leading: Icon(
+                        Icons.cloud_upload,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      title: const Text('Blossom Servers'),
+                      subtitle: const Text('Configure file storage servers'),
+                      trailing: Icon(
+                        Icons.chevron_right,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      onTap: () {
+                        Get.to(() => const BlossomSettingsScreen());
+                      },
                     ),
                     Divider(
                       color: Theme.of(context).colorScheme.outlineVariant,
