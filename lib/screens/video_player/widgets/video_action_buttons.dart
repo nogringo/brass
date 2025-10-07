@@ -10,6 +10,7 @@ class VideoActionButtons extends StatelessWidget {
   final VoidCallback onDislikeTap;
   final VoidCallback onZapTap;
   final VoidCallback onShareTap;
+  final VoidCallback onAddToPlaylistTap;
   final String Function(int) formatCount;
 
   const VideoActionButtons({
@@ -23,6 +24,7 @@ class VideoActionButtons extends StatelessWidget {
     required this.onDislikeTap,
     required this.onZapTap,
     required this.onShareTap,
+    required this.onAddToPlaylistTap,
     required this.formatCount,
   });
 
@@ -67,6 +69,13 @@ class VideoActionButtons extends StatelessWidget {
           label: Text(formatCount(zapsCount)),
         ),
         const Spacer(),
+        // Add to Playlist button
+        OutlinedButton.icon(
+          onPressed: onAddToPlaylistTap,
+          icon: const Icon(Icons.playlist_add, size: 20),
+          label: const Text('Save'),
+        ),
+        const SizedBox(width: 8),
         // Share button
         OutlinedButton.icon(
           onPressed: onShareTap,

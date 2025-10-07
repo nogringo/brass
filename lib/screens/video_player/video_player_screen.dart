@@ -477,6 +477,124 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     );
   }
 
+  void _onAddToPlaylistTap() async {
+    final ndk = Repository.ndk;
+    final pubkey = ndk.accounts.getPublicKey();
+
+    if (pubkey == null) {
+      AppNavigation.toLogin();
+      return;
+    }
+
+    // Ensure playlists are loaded
+    if (_repository.playlists.isEmpty) {
+      await _repository.fetchPlaylists(pubkey);
+    }
+
+    if (!mounted) return;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'Add to Playlist',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+            const SizedBox(height: 16),
+            if (_repository.playlists.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.playlist_add,
+                        size: 48,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No playlists yet',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          AppNavigation.toPlaylist();
+                        },
+                        icon: const Icon(Icons.add),
+                        label: const Text('Create a playlist'),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              ...List.generate(_repository.playlists.length, (index) {
+                final playlist = _repository.playlists[index];
+                final isVideoInPlaylist = playlist.videoIds.contains(widget.video.id);
+
+                return ListTile(
+                  leading: CircleAvatar(
+                    child: Text(playlist.displayName[0].toUpperCase()),
+                  ),
+                  title: Text(playlist.displayName),
+                  subtitle: Text(
+                    '${playlist.videoIds.length} video${playlist.videoIds.length == 1 ? '' : 's'}',
+                  ),
+                  trailing: isVideoInPlaylist
+                      ? const Icon(Icons.check, color: Colors.green)
+                      : null,
+                  onTap: isVideoInPlaylist
+                      ? null
+                      : () async {
+                          final navigator = Navigator.of(context);
+                          try {
+                            await _repository.addVideoToPlaylist(
+                              playlist.dTag,
+                              widget.video.id,
+                            );
+                            if (!mounted) return;
+                            toastification.show(
+                              context: navigator.context,
+                              type: ToastificationType.success,
+                              title: Text('Added to ${playlist.displayName}'),
+                              alignment: Alignment.bottomRight,
+                              autoCloseDuration: const Duration(seconds: 2),
+                            );
+                            navigator.pop();
+                          } catch (e) {
+                            if (!mounted) return;
+                            toastification.show(
+                              context: navigator.context,
+                              type: ToastificationType.error,
+                              title: const Text('Failed to add video to playlist'),
+                              description: Text(e.toString()),
+                              alignment: Alignment.bottomRight,
+                              autoCloseDuration: const Duration(seconds: 3),
+                            );
+                          }
+                        },
+                );
+              }),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -535,6 +653,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     onDislikeTap: _onDislikeTap,
                     onZapTap: _onZapTap,
                     onShareTap: _onShareTap,
+                    onAddToPlaylistTap: _onAddToPlaylistTap,
                     formatCount: _formatCount,
                   ),
 

@@ -17,7 +17,7 @@ class ChannelController extends GetxController
   final RxList<NostrPlaylist> playlists = <NostrPlaylist>[].obs;
   final RxList<NostrVideo> videos = <NostrVideo>[].obs;
   final RxList<NostrVideo> shorts = <NostrVideo>[].obs;
-  final RxBool isSubscribed = false.obs;
+  final RxBool isFollowing = false.obs;
 
   String? _currentPubkey;
 
@@ -58,8 +58,8 @@ class ChannelController extends GetxController
         .toList();
   }
 
-  void toggleSubscribe() {
-    isSubscribed.value = !isSubscribed.value;
-    // TODO: Implement actual subscription logic (e.g., save to local storage or backend)
+  void toggleFollow() {
+    isFollowing.value = !isFollowing.value;
+    // TODO: Implement actual follow logic (e.g., save to local storage or backend)
   }
 }

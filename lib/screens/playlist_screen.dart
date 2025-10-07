@@ -127,16 +127,6 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                       ? null
                       : descriptionController.text.trim(),
                 );
-
-                if (mounted) {
-                  toastification.show(
-                    context: navigator.context,
-                    type: ToastificationType.success,
-                    title: const Text('Playlist created'),
-                    alignment: Alignment.bottomRight,
-                    autoCloseDuration: const Duration(seconds: 2),
-                  );
-                }
               } catch (e) {
                 if (mounted) {
                   toastification.show(
