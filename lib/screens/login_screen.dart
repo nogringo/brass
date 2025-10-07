@@ -12,13 +12,26 @@ class LoginScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Login with Nostr')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: NLogin(
-          ndk: ndk,
-          onLoggedIn: () {
-            Get.back();
-          },
+      body: SingleChildScrollView(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: 500),
+            child: Padding(
+              padding: const EdgeInsets.only(
+                right: 12,
+                left: 12,
+                bottom: kToolbarHeight,
+              ),
+              child: NLogin(
+                ndk: ndk,
+                onLoggedIn: () {
+                  Get.back();
+                },
+                enablePubkeyLogin: false,
+                nsecLabelText: "Private Key",
+              ),
+            ),
+          ),
         ),
       ),
     );
