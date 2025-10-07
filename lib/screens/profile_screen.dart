@@ -352,20 +352,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Header gradient background
-            Container(
-              height: 120,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Theme.of(context).colorScheme.primaryContainer,
-                    Theme.of(context).colorScheme.surface,
-                  ],
-                ),
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
