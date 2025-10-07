@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:system_theme/system_theme.dart';
 import '../../providers/theme_provider.dart';
 
 class ThemeSettingsScreen extends StatelessWidget {
@@ -56,27 +57,67 @@ class ThemeSettingsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // Use System Accent toggle
           Obx(
-            () => SwitchListTile(
-              title: const Text('Use System Accent Color'),
-              subtitle: const Text('Use the accent color from your system theme'),
-              value: themeProvider.useSystemAccent.value,
-              onChanged: (value) => themeProvider.setUseSystemAccent(value),
-            ),
-          ),
-          const SizedBox(height: 16),
+            () {
+              // Get the actual system color from the OS
+              final systemColor = Color(SystemTheme.accentColor.accent.toARGB32());
 
-          Obx(
-            () => AnimatedOpacity(
-              opacity: themeProvider.useSystemAccent.value ? 0.5 : 1.0,
-              duration: const Duration(milliseconds: 200),
-              child: AbsorbPointer(
-                absorbing: themeProvider.useSystemAccent.value,
-                child: Wrap(
-                  spacing: 16,
-                  runSpacing: 16,
-                  children: ThemeProvider.accentColors.map((color) {
+              return Wrap(
+                spacing: 16,
+                runSpacing: 16,
+                children: [
+                  // System color option
+                  InkWell(
+                    onTap: () => themeProvider.setUseSystemAccent(true),
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            systemColor,
+                            systemColor.withValues(alpha: 0.7),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                        border: themeProvider.useSystemAccent.value
+                            ? Border.all(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                width: 3,
+                              )
+                            : null,
+                      ),
+                      child: Stack(
+                        children: [
+                          if (themeProvider.useSystemAccent.value)
+                            Center(
+                              child: Icon(
+                                Icons.check,
+                                color: systemColor.computeLuminance() > 0.5
+                                    ? Colors.black
+                                    : Colors.white,
+                              ),
+                            ),
+                          Positioned(
+                            bottom: 4,
+                            right: 4,
+                            child: Icon(
+                              Icons.computer,
+                              size: 16,
+                              color: systemColor.computeLuminance() > 0.5
+                                  ? Colors.black54
+                                  : Colors.white54,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Predefined colors
+                  ...ThemeProvider.accentColors.map((color) {
                     final isSelected = !themeProvider.useSystemAccent.value &&
                         themeProvider.accentColor.value == color;
                     return InkWell(
@@ -105,10 +146,10 @@ class ThemeSettingsScreen extends StatelessWidget {
                             : null,
                       ),
                     );
-                  }).toList(),
-                ),
-              ),
-            ),
+                  }),
+                ],
+              );
+            },
           ),
           const SizedBox(height: 32),
 
