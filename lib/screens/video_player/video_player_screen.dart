@@ -8,6 +8,7 @@ import 'package:ndk/ndk.dart';
 import 'package:toastification/toastification.dart';
 import '../../repository.dart';
 import '../../routes/app_navigation.dart';
+import '../../utils/nevent.dart';
 import 'widgets/video_metadata.dart';
 import 'widgets/video_action_buttons.dart';
 import 'widgets/video_author_info.dart';
@@ -413,6 +414,25 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     // TODO: Implement zap functionality
   }
 
+  String _getNevent() {
+    try {
+      final nevent = Nevent(
+        eventId: widget.video.id,
+        author: widget.video.authorPubkey,
+        kind: 21, // Assuming normal videos are kind 21
+      );
+      return NeventCodec.encode(nevent);
+    } catch (e) {
+      // Fallback to raw ID if encoding fails
+      return widget.video.id;
+    }
+  }
+
+  String _getAppUrl() {
+    final nevent = _getNevent();
+    return 'https://nogringo.github.io/brass/#/video/$nevent';
+  }
+
   void _onShareTap() {
     showModalBottomSheet(
       context: context,
@@ -449,20 +469,43 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.event),
-              title: const Text('Event ID'),
+              title: const Text('Event ID (nevent)'),
               subtitle: Text(
-                widget.video.id,
+                _getNevent(),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
               trailing: IconButton(
                 icon: const Icon(Icons.copy),
                 onPressed: () {
-                  Clipboard.setData(ClipboardData(text: widget.video.id));
+                  Clipboard.setData(ClipboardData(text: _getNevent()));
                   toastification.show(
                     context: context,
                     type: ToastificationType.success,
                     title: const Text('Event ID copied to clipboard'),
+                    alignment: Alignment.bottomRight,
+                    autoCloseDuration: const Duration(seconds: 2),
+                  );
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.open_in_browser),
+              title: const Text('App Link'),
+              subtitle: Text(
+                _getAppUrl(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: IconButton(
+                icon: const Icon(Icons.copy),
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: _getAppUrl()));
+                  toastification.show(
+                    context: context,
+                    type: ToastificationType.success,
+                    title: const Text('App link copied to clipboard'),
                     alignment: Alignment.bottomRight,
                     autoCloseDuration: const Duration(seconds: 2),
                   );

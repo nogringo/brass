@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -8,6 +9,7 @@ import 'package:ndk/ndk.dart';
 import 'package:toastification/toastification.dart';
 import '../../models/nostr_video.dart';
 import '../../repository.dart';
+import '../../utils/nevent.dart';
 import '../login_screen.dart';
 
 class VideoPlayerController extends GetxController {
@@ -301,14 +303,134 @@ class VideoPlayerController extends GetxController {
     // TODO: Implement zap functionality
   }
 
-  void onShareTap() {
-    // TODO: Implement share functionality
+  void onShareTap(BuildContext context) {
+    if (currentVideo == null) return;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Share Video',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(Icons.link),
+              title: const Text('Video URL'),
+              subtitle: Text(
+                currentVideo!.videoUrl,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: IconButton(
+                icon: const Icon(Icons.copy),
+                onPressed: () {
+                  Clipboard.setData(
+                    ClipboardData(text: currentVideo!.videoUrl),
+                  );
+                  if (Get.context != null) {
+                    toastification.show(
+                      context: Get.context!,
+                      type: ToastificationType.success,
+                      title: const Text('Video URL copied to clipboard'),
+                      alignment: Alignment.bottomRight,
+                      autoCloseDuration: const Duration(seconds: 2),
+                    );
+                  }
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.event),
+              title: const Text('Event ID (nevent)'),
+              subtitle: Text(
+                _getNevent(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: IconButton(
+                icon: const Icon(Icons.copy),
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: _getNevent()));
+                  if (Get.context != null) {
+                    toastification.show(
+                      context: Get.context!,
+                      type: ToastificationType.success,
+                      title: const Text('Event ID copied to clipboard'),
+                      alignment: Alignment.bottomRight,
+                      autoCloseDuration: const Duration(seconds: 2),
+                    );
+                  }
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.open_in_browser),
+              title: const Text('App Link'),
+              subtitle: Text(
+                _getAppUrl(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: IconButton(
+                icon: const Icon(Icons.copy),
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: _getAppUrl()));
+                  if (Get.context != null) {
+                    toastification.show(
+                      context: Get.context!,
+                      type: ToastificationType.success,
+                      title: const Text('App link copied to clipboard'),
+                      alignment: Alignment.bottomRight,
+                      autoCloseDuration: const Duration(seconds: 2),
+                    );
+                  }
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
   }
 
   void onChannelTap() {
     if (currentVideo == null) return;
     pauseVideo();
     // Navigation will be handled in the view
+  }
+
+  String _getNevent() {
+    if (currentVideo == null) return '';
+
+    try {
+      final nevent = Nevent(
+        eventId: currentVideo!.id,
+        author: currentVideo!.authorPubkey,
+        kind: 21, // Assuming normal videos are kind 21
+      );
+      return NeventCodec.encode(nevent);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error encoding nevent: $e');
+      }
+      return currentVideo!.id; // Fallback to raw ID if encoding fails
+    }
+  }
+
+  String _getAppUrl() {
+    if (currentVideo == null) return '';
+    final nevent = _getNevent();
+    return 'https://nogringo.github.io/brass/#/video/$nevent';
   }
 
   String formatCount(int count) {
