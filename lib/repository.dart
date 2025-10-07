@@ -368,4 +368,18 @@ class Repository extends GetxController {
         .whereType<NostrVideo>()
         .toList();
   }
+
+  // Delete video using NDK's built-in deletion method (NIP-09)
+  Future<void> deleteVideo(String videoId) async {
+    final pubkey = ndk.accounts.getPublicKey();
+    if (pubkey == null) throw Exception('Not logged in');
+
+    // Use NDK's broadcastDeletion method
+    ndk.broadcast.broadcastDeletion(eventId: videoId);
+
+    // Remove from local lists
+    normalVideos.removeWhere((v) => v.id == videoId);
+    shortsVideos.removeWhere((v) => v.id == videoId);
+    update();
+  }
 }

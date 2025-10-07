@@ -243,6 +243,95 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _shareVideo(NostrVideo video) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Share Video',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(Icons.video_library),
+              title: const Text('Video ID'),
+              subtitle: Text(
+                video.id,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: IconButton(
+                icon: const Icon(Icons.copy),
+                onPressed: () {
+                  _copyToClipboard(video.id, 'Video ID');
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showDeleteDialog(NostrVideo video) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Video'),
+        content: Text('Are you sure you want to delete "${video.title}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      try {
+        await _repository.deleteVideo(video.id);
+        setState(() {
+          _userVideos.removeWhere((v) => v.id == video.id);
+        });
+        if (mounted) {
+          toastification.show(
+            context: context,
+            type: ToastificationType.success,
+            title: const Text('Video deleted'),
+            alignment: Alignment.bottomRight,
+            autoCloseDuration: const Duration(seconds: 2),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          toastification.show(
+            context: context,
+            type: ToastificationType.error,
+            title: const Text('Failed to delete video'),
+            description: Text(e.toString()),
+            alignment: Alignment.bottomRight,
+            autoCloseDuration: const Duration(seconds: 3),
+          );
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final pubkey = ndk.accounts.getPublicKey();
@@ -252,6 +341,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            surfaceTintColor: Theme.of(context).scaffoldBackgroundColor,
             expandedHeight: 200,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
@@ -573,6 +664,64 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         ),
                                       ),
                                     ),
+                                  Positioned(
+                                    top: 4,
+                                    right: 4,
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: PopupMenuButton<String>(
+                                        icon: Container(
+                                          padding: const EdgeInsets.all(4),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .scrim
+                                                .withValues(alpha: 0.87),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Icon(
+                                            Icons.more_vert,
+                                            size: 20,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onPrimary,
+                                          ),
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        onSelected: (value) {
+                                          if (value == 'share') {
+                                            _shareVideo(video);
+                                          } else if (value == 'delete') {
+                                            _showDeleteDialog(video);
+                                          }
+                                        },
+                                        itemBuilder: (context) => [
+                                          const PopupMenuItem(
+                                            value: 'share',
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.share),
+                                                SizedBox(width: 12),
+                                                Text('Share'),
+                                              ],
+                                            ),
+                                          ),
+                                          const PopupMenuItem(
+                                            value: 'delete',
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.delete_outline),
+                                                SizedBox(width: 12),
+                                                Text('Delete'),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
