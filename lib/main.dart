@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:brass/utils/get_database.dart';
+import 'package:brass/utils/no_event_verifier.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -37,7 +38,10 @@ void main() async {
   final cacheManager = SembastCacheManager(db);
 
   final ndk = Ndk(
-    NdkConfig(eventVerifier: RustEventVerifier(), cache: cacheManager),
+    NdkConfig(
+      eventVerifier: kIsWeb ? NoEventVerifier() : RustEventVerifier(),
+      cache: cacheManager,
+    ),
   );
   await nRestoreAccounts(ndk);
   Get.put(ndk);

@@ -28,6 +28,7 @@ class Repository extends GetxController {
     }
 
     await for (final event in response.stream) {
+      print(event);
       final video = NostrVideo.fromEvent(event);
       if (event.kind == 21) {
         if (normalVideos.where((v) => v.id == video.id).isNotEmpty) continue;
