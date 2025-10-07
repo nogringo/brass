@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
 import '../models/nostr_video.dart';
 import '../repository.dart';
-import 'video_player/video_player_screen.dart';
-import 'upload_video/upload_video_screen.dart';
+import '../routes/app_navigation.dart';
 
 enum VideoType { long, short }
 
@@ -110,12 +109,7 @@ class _VideoListScreenState extends State<VideoListScreen> {
             icon: const Icon(Icons.add),
             label: Text("Upload"),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const UploadVideoScreen(),
-                ),
-              );
+              AppNavigation.toUploadVideo();
             },
           ),
           SizedBox(width: 12),
@@ -177,13 +171,7 @@ class _VideoListScreenState extends State<VideoListScreen> {
                       clipBehavior: Clip.antiAlias,
                       child: InkWell(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  VideoPlayerScreen(video: video),
-                            ),
-                          );
+                          AppNavigation.toVideoPlayer(video);
                         },
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

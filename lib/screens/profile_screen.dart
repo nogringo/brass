@@ -3,17 +3,12 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:ndk/ndk.dart';
 import 'package:nostr_widgets/functions/n_save_accounts_state.dart';
 import 'package:toastification/toastification.dart';
 import '../repository.dart';
 import '../models/nostr_video.dart';
-import 'login_screen.dart';
-import 'settings/blossom_settings_screen.dart';
-import 'settings/theme_settings_screen.dart';
-import 'upload_video/upload_video_screen.dart';
-import 'video_player/video_player_screen.dart';
+import '../routes/app_navigation.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -345,12 +340,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             icon: const Icon(Icons.add),
             label: const Text("Upload"),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const UploadVideoScreen(),
-                ),
-              );
+              AppNavigation.toUploadVideo();
             },
           ),
           const SizedBox(width: 12),
@@ -435,12 +425,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   if (!isLoggedIn)
                     FilledButton.icon(
                       onPressed: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoginScreen(),
-                          ),
-                        );
+                        AppNavigation.toLogin();
                         _loadUserData();
                       },
                       icon: const Icon(Icons.login),
@@ -515,7 +500,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                       onTap: () {
-                        Get.to(() => const BlossomSettingsScreen());
+                        AppNavigation.toBlossomSettings();
                       },
                     ),
                     Divider(
@@ -533,7 +518,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     onTap: () {
-                      Get.to(() => const ThemeSettingsScreen());
+                      AppNavigation.toThemeSettings();
                     },
                   ),
                   ListTile(
@@ -593,13 +578,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       clipBehavior: Clip.antiAlias,
                       child: InkWell(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  VideoPlayerScreen(video: video),
-                            ),
-                          );
+                          AppNavigation.toVideoPlayer(video);
                         },
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -818,13 +797,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       clipBehavior: Clip.antiAlias,
                       child: InkWell(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  VideoPlayerScreen(video: video),
-                            ),
-                          );
+                          AppNavigation.toVideoPlayer(video);
                         },
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

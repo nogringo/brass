@@ -1,15 +1,13 @@
 import 'package:brass/models/nostr_video.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:ndk/entities.dart';
 import 'package:ndk/ndk.dart';
 import 'package:toastification/toastification.dart';
 import '../../repository.dart';
-import '../channel/channel_screen.dart';
-import '../login_screen.dart';
+import '../../routes/app_navigation.dart';
 import 'widgets/video_metadata.dart';
 import 'widgets/video_action_buttons.dart';
 import 'widgets/video_author_info.dart';
@@ -94,7 +92,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     final myPubkey = ndk.accounts.getPublicKey();
 
     if (myPubkey == null) {
-      Get.to(() => const LoginScreen());
+      AppNavigation.toLogin();
       return;
     }
 
@@ -205,7 +203,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     final pubkey = ndk.accounts.getPublicKey();
 
     if (pubkey == null) {
-      Get.to(() => const LoginScreen());
+      AppNavigation.toLogin();
       return;
     }
 
@@ -334,7 +332,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     final pubkey = ndk.accounts.getPublicKey();
 
     if (pubkey == null) {
-      Get.to(() => const LoginScreen());
+      AppNavigation.toLogin();
       return;
     }
 
@@ -376,7 +374,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     final pubkey = ndk.accounts.getPublicKey();
 
     if (pubkey == null) {
-      Get.to(() => const LoginScreen());
+      AppNavigation.toLogin();
       return;
     }
 
@@ -549,13 +547,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     authorMetadata: _authorMetadata,
                     onTap: () {
                       _player.pause();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ChannelScreen(pubkey: widget.video.authorPubkey),
-                        ),
-                      );
+                      AppNavigation.toChannel(widget.video.authorPubkey);
                     },
                     onFollowTap: _toggleFollow,
                     isFollowing: _isFollowing,

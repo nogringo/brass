@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../models/nostr_video.dart';
-import '../../video_player/video_player_screen.dart';
+import '../../../routes/app_navigation.dart';
 
 class ShortsGridView extends StatelessWidget {
   final List<NostrVideo> shorts;
@@ -73,12 +73,7 @@ class ShortsGridView extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => VideoPlayerScreen(video: video),
-                ),
-              );
+              AppNavigation.toVideoPlayer(video);
             },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

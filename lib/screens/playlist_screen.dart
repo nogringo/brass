@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toastification/toastification.dart';
 import '../repository.dart';
-import 'liked_videos_screen.dart';
-import 'playlist_detail_screen.dart';
+import '../routes/app_navigation.dart';
 
 class PlaylistScreen extends StatefulWidget {
   const PlaylistScreen({super.key});
@@ -270,13 +269,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                         ),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  LikedVideosScreen(likedVideos: _likedVideos),
-                            ),
-                          );
+                          AppNavigation.toLikedVideos(_likedVideos);
                         },
                       ),
                     );
@@ -297,13 +290,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                       ),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                PlaylistDetailScreen(playlist: playlist),
-                          ),
-                        );
+                        AppNavigation.toPlaylistDetail(playlist);
                       },
                     ),
                   );

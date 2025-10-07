@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../models/playlist.dart';
-import '../../playlist_detail_screen.dart';
+import '../../../routes/app_navigation.dart';
 
 class PlaylistGridView extends StatelessWidget {
   final List<NostrPlaylist> playlists;
@@ -47,13 +47,7 @@ class PlaylistGridView extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      PlaylistDetailScreen(playlist: playlist),
-                ),
-              );
+              AppNavigation.toPlaylistDetail(playlist);
             },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

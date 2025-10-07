@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
 import '../models/playlist.dart';
 import '../repository.dart';
-import 'video_player/video_player_screen.dart';
+import '../routes/app_navigation.dart';
 
 class PlaylistDetailScreen extends StatefulWidget {
   final NostrPlaylist playlist;
@@ -127,12 +127,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                   margin: const EdgeInsets.only(bottom: 12),
                   child: InkWell(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => VideoPlayerScreen(video: video),
-                        ),
-                      );
+                      AppNavigation.toVideoPlayer(video);
                     },
                     child: Row(
                       children: [
